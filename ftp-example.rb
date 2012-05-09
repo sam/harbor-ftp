@@ -1,3 +1,5 @@
+#!/usr/bin/env jruby
+
 require "java"
 
 jars = File.join(File.dirname(__FILE__), "*.jar")
