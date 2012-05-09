@@ -2,7 +2,7 @@
 
 require "java"
 
-jars = File.join(File.dirname(__FILE__), "*.jar")
+jars = File.join(File.dirname(__FILE__), "apache-ftpserver-1.0.6", "common", "lib", "*.jar")
 Dir[jars].each { |jar| require jar }
 
 import org.apache.ftpserver.FtpServer
