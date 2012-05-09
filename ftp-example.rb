@@ -1,44 +1,52 @@
 #!/usr/bin/env jruby
 
+require "bundler/setup"
+require "pathname"
 require "java"
 
-jars = File.join(File.dirname(__FILE__), "apache-ftpserver-1.0.6", "common", "lib", "*.jar")
-Dir[jars].each { |jar| require jar }
+Dir[Pathname("apache-ftpserver-1.0.6/common/lib/*.jar")].each { |jar| require jar }
 
-# Setup your login:
-import org.apache.ftpserver.ftplet.User
-import org.apache.ftpserver.ftplet.UserManager
-import org.apache.ftpserver.usermanager.PropertiesUserManagerFactory
-import org.apache.ftpserver.usermanager.ClearTextPasswordEncryptor
-import org.apache.ftpserver.usermanager.UserFactory
+require "sequel"
 
-user_manager_factory = PropertiesUserManagerFactory.new
-user_manager_factory.password_encryptor = ClearTextPasswordEncryptor.new
+DB = Sequel.connect "jdbc:postgresql://localhost/ftp_example"
 
-user_manager = user_manager_factory.create_user_manager
+class Example
+  
+  include_package "org.apache.ftpserver"
+  include_package "org.apache.ftpserver.ftplet"
+  include_package "org.apache.ftpserver.usermanager"
+  include_package "org.apache.ftpserver.listener"
 
-user_factory = UserFactory.new
-user_factory.name = "me"
-user_factory.password = "secret"
-user_factory.home_directory = File.dirname(__FILE__)
-user = user_factory.create_user
+  def self.start
+    # Setup your login:
+    user_manager_factory = PropertiesUserManagerFactory.new
+    user_manager_factory.password_encryptor = ClearTextPasswordEncryptor.new
 
-user_manager.save user
+    user_manager = user_manager_factory.create_user_manager
 
-# Setup your server:
-import org.apache.ftpserver.FtpServer
-import org.apache.ftpserver.FtpServerFactory
-import org.apache.ftpserver.listener.ListenerFactory
+    user_factory = UserFactory.new
+    user_factory.name = "me"
+    user_factory.password = "secret"
+    user_factory.home_directory = File.dirname(__FILE__)
+    user = user_factory.create_user
 
-server_factory = FtpServerFactory.new
-listener_factory = ListenerFactory.new
+    user_manager.save user
 
-listener_factory.port = 2221
+    # Setup your server:
+    server_factory = FtpServerFactory.new
+    listener_factory = ListenerFactory.new
 
-server_factory.user_manager = user_manager
-server_factory.add_listener "default", listener_factory.create_listener
+    listener_factory.port = 2221
 
-server = server_factory.create_server
+    server_factory.user_manager = user_manager
+    server_factory.add_listener "default", listener_factory.create_listener
 
-# Start the server
-server.start
+    server = server_factory.create_server
+
+    # Start the server
+    server.start
+  end
+  
+end
+
+Example::start
