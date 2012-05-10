@@ -20,6 +20,8 @@ p. The real fun starts when you embed it however. Say you're writing a Photo sha
 In order to start the FTP server, and then your usual web-server in your @config.ru@ you'd write something like this:
 
 bc.. require "harbor/ftp"
+require "thread"
+
 server = Harbor::FTP::Server.new
 server.port = 21
 ftp_thread = Thread.new { server.start }
