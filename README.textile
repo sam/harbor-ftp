@@ -15,7 +15,7 @@ server = Harbor::FTP::Server.new
 server.port = 2121
 server.start
 
-p. The real fun starts when you embed it however. Say you're writing a Photo sharing app. You want users to be able to log into their account over FTP and upload bucketfuls of photos and you don't want to have to manage a separate process. If the site it running, the FTP server is running. In order to start the FTP server, and then your usual web-server in your @config.ru@ you'd write something like this:
+p. The real fun starts when you embed it however. Say you're writing a Photo sharing app. You want users to be able to log into their account over FTP and upload bucketfuls of photos and you don't want to have to manage a separate process. If the site is running, the FTP server is running. In order to start the FTP server, and then your usual web-server in your @config.ru@ you'd write something like this:
 
 bc.. require "harbor/ftp"
 server = Harbor::FTP::Server.new
