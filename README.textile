@@ -1,6 +1,6 @@
 h1. Setup
 
-All necessary Java jar dependencies are included. Just bundle your Ruby dependencies from the Gemfile.
+All necessary Java JAR dependencies are included. Just bundle your Ruby dependencies from the Gemfile.
 
 Then just start it up (I'm using RVM to run JRuby-HEAD under OpenJDK 7u2 on OSX):
 
