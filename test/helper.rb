@@ -6,6 +6,7 @@ require "faker"
 require "sequel"
 
 require "minitest/autorun"
+require "minitest/pride"
 
 $:.unshift (Pathname(__FILE__).dirname.parent + "lib").to_s
 require "harbor/ftp"

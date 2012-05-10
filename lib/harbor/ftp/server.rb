@@ -3,16 +3,15 @@ class Harbor
     class Server
       
       include_package "org.apache.ftpserver"
-      include_package "org.apache.ftpserver.ftplet"
-      include_package "org.apache.ftpserver.usermanager"
       include_package "org.apache.ftpserver.listener"
 
-      def initialize(background = false)
+      def initialize
         @started = false
         @port = 21
+        @user_manager = nil
       end
       
-      attr_reader :port
+      attr_reader :port, :user_manager
       
       def port=(value)
         raise RunningConfigurationChangeError.new("port") if @started
@@ -21,23 +20,13 @@ class Harbor
         @port = value
       end
       
+      def user_manager=(value)
+        @user_manager = value
+      end
+      
       def start
         raise ServerAlreadyStartedError.new if @started
         @started = true
-        
-        # Setup your login:
-        user_manager_factory = PropertiesUserManagerFactory.new
-        user_manager_factory.password_encryptor = ClearTextPasswordEncryptor.new
-
-        user_manager = user_manager_factory.create_user_manager
-
-        user_factory = UserFactory.new
-        user_factory.name = "me"
-        user_factory.password = "secret"
-        user_factory.home_directory = File.dirname(__FILE__)
-        user = user_factory.create_user
-
-        user_manager.save user
 
         # Setup your server:
         server_factory = FtpServerFactory.new
@@ -45,7 +34,8 @@ class Harbor
 
         listener_factory.port = @port
 
-        server_factory.user_manager = user_manager
+        server_factory.user_manager = @user_manager if @user_manager
+        
         server_factory.add_listener "default", listener_factory.create_listener
 
         server = server_factory.create_server

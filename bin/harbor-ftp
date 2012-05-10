@@ -2,11 +2,8 @@
 
 require "bundler/setup"
 require "lib/harbor/ftp"
-
-require "sequel"
-Sequel.connect("jdbc:h2:mem:")
-
-require "harbor/ftp/user_manager"
+require "harbor/ftp/sample_user_manager"
 
 server = Harbor::FTP::Server.new
+server.user_manager = Harbor::FTP::SampleUserManager.setup("me", "secret")
 server.start
