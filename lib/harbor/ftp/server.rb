@@ -1,8 +1,3 @@
-require "pathname"
-require "java"
-
-Dir[Pathname("apache-ftpserver-1.0.6/common/lib/*.jar")].each { |jar| require jar }
-
 class Harbor
   module FTP
     class Server

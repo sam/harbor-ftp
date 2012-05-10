@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-
-if ! [ -d apache-ftpserver-1.0.6 ]; then
-  curl http://archive.apache.org/dist/mina/ftpserver/1.0.6/ftpserver-1.0.6.tar.gz | tar -xz -
-fi

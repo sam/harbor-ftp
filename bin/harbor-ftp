@@ -1,9 +1,9 @@
 #!/usr/bin/env jruby
 
 require "bundler/setup"
-require "sequel"
+require "lib/harbor/ftp"
 
-Sequel.sqlite
+Harbor::FTP::user_database "jdbc:h2:mem:"
 
 server = Harbor::FTP::Server.new
 server.start

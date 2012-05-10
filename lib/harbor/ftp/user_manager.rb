@@ -1,3 +1,4 @@
+require "sequel"
 require "harbor/ftp/user"
 
 class Harbor
