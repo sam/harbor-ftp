@@ -8,7 +8,7 @@ class Harbor
       spawner do |user|
         user.name = Faker::Name.name
         user.email = Faker::Internet.email
-        user.password = Faker::Password.password
+        user.password = "secret"
       end
     end # class User
   end # module FTP

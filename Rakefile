@@ -1,8 +1,9 @@
 require "rubygems"
 require "pathname"
 require "rake"
-require "rake/rdoctask"
-require "rake/testtask"
+
+lib = (Pathname(__FILE__).dirname + "lib").to_s
+$:.unshift lib unless $:.include?(lib)
 
 def gemspec
   @gemspec ||= begin
@@ -14,20 +15,22 @@ end
 # Tests
 task :default => [ :test ]
 
+require "rake/testtask"
 Rake::TestTask.new do |t|
   t.libs << "test"
   t.test_files = FileList["test/**/*_spec.rb"]
   t.verbose = true
 end
 
+require "rdoc/task"
 task :rdoc do
   sh <<-EOS.strip
 rdoc -T harbor-ftp#{" --op " + ENV["OUTPUT_DIRECTORY"] if ENV["OUTPUT_DIRECTORY"]} --line-numbers --main README --title "Harbor FTP Server Documentation" lib/harbor README.textile
   EOS
 end
 
-require "rake/gempackagetask"
-Rake::GemPackageTask.new(gemspec) do |package|
+require "rubygems/package_task"
+Gem::PackageTask.new(gemspec) do |package|
   package.gem_spec = gemspec
 end
 
