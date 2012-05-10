@@ -1,17 +1,14 @@
 h1. Setup
 
-Clone the project. Then pull down the Apache FTP Server jars:
-
-bc. curl http://archive.apache.org/dist/mina/ftpserver/1.0.6/ftpserver-1.0.6.tar.gz | tar -xz -
-
-I've added a @setup@ script for you that will do just this.
+All necessary Java jar dependencies are included. Just bundle your Ruby dependencies from the Gemfile.
 
 Then just start it up (I'm using RVM to run JRuby-HEAD under OpenJDK 7u2 on OSX):
 
-bc. ./ftp-example.rb
+bc. bin/harbor-ftp
 
 h2. TODO
 
 * Implement our own simple UserManager (see: http://svn.apache.org/viewvc/mina/ftpserver/trunk/ftplet-api/src/main/java/org/apache/ftpserver/ftplet/UserManager.java?view=markup)
 * Create a much simpler facade in Ruby to configure and start server
+  * Tests
 * Provide base Ruby implementations as reference for common tasks like integrating with your own user authentication system, or overriding the LIST command, etc
