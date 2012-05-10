@@ -1,3 +1,5 @@
+require "harbor/ftp/user"
+
 class Harbor
   module FTP
     class User < Sequel::Model
