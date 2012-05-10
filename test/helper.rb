@@ -7,6 +7,7 @@ require "sequel"
 
 require "minitest/autorun"
 require "minitest/pride"
+require "minitest/wscolor"
 
 $:.unshift (Pathname(__FILE__).dirname.parent + "lib").to_s
 require "harbor/ftp"
