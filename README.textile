@@ -2,7 +2,7 @@ h1. Setup
 
 All necessary Java JAR dependencies are included. Just bundle your Ruby dependencies from the Gemfile.
 
-Then just start it up (I'm using RVM to run JRuby-HEAD under OpenJDK 7u2 on OSX):
+Then just start it up (I'm using RVM to run JRuby-HEAD (1.7-dev) under OpenJDK 7u4 on OSX):
 
 bc. bin/harbor-ftp
 
