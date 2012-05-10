@@ -1,5 +1,5 @@
 class Harbor
-  class FTP
+  module FTP
     class UserManager
       include org.apache.ftpserver.ftplet.UserManager
       
