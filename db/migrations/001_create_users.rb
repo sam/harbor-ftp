@@ -4,6 +4,7 @@ Sequel.migration do
       String :email, primary_key: true
       String :name, null: false
       String :password, null: false
+      String :ftp_home_directory, default: "/tmp"
     end
   end
   

@@ -77,8 +77,25 @@ class Harbor
       #
       #   User authenticate(Authentication authentication) throws AuthenticationFailedException;
       def authenticate(authentication)
-        raise NotImplementedError.new
-        # return org.apache.ftpserver.ftplet.User
+        raise AuthenticationFailedException.new
+        
+        case authentication
+        when AnonymousAuthentication then
+          if user = @user_manager.get_user_by_name("anonymous")
+            UserAdapter.new(user)
+          else
+            raise AuthenticationFailedException.new
+          end
+        when UsernamePasswordAuthentication then
+          user = @user_manager.get_user_by_name(authentication.username)
+          if user.password == authentication.password
+            UserAdapter.new(user)
+          else
+            raise AuthenticationFailedException.new
+          end
+        else
+          raise AuthenticationFailedException.new
+        end
       end
 
       # Get admin user name
