@@ -1,12 +1,13 @@
-require "sequel"
-require "harbor/ftp/user"
-
 class Harbor
   module FTP
+    # This class is for internal use only. To implement your own UserManager see
+    # the Harbor::FTP::UserManager module for the interface and
+    # Harbor::FTP::UserManagers::HashUserManager for an example implementation.
     class ReadonlyUserManagerAdapter
       include org.apache.ftpserver.ftplet.UserManager
       
       def initialize(user_manager)
+        raise ArgumentError.new("+user_manager+ must include the UserManager module") unless user_manager.is_a?(Harbor::FTP::UserManager)
         @user_manager = user_manager
       end
       
@@ -19,8 +20,7 @@ class Harbor
       #
       #   User getUserByName(String username) throws FtpException;
       def get_user_by_name(username)
-        DB[:users].find(:email => username)
-        raise NotImplementedError.new
+        @user_manager.get_user_by_name(username)
         # return org.apache.ftpserver.ftplet.User
       end
       
@@ -32,7 +32,7 @@ class Harbor
       #
       #   String[] getAllUserNames() throws FtpException;
       def get_all_user_names
-        DB[:users].map(:email)
+        @user_manager.get_all_user_names
       end
       
       # Delete the user from the system.
@@ -65,10 +65,8 @@ class Harbor
       # @throws FtpException 
       #
       #   boolean doesExist(String username) throws FtpException;
-      def exists?(username)
-        DB.select(1).where(
-          DB[:users].filter(:email => username).exists
-        ).single_value == 1
+      def does_exist(username)
+        @user_manager.exists?(username)
       end
       
       # Authenticate user

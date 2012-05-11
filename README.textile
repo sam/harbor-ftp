@@ -46,12 +46,16 @@ p. The real fun starts when you embed it however. Say you're writing a Photo sha
 In order to start the FTP server, and then your usual web-server in your @config.ru@ you'd write something like this:
 
 bc.. require "harbor/ftp"
-require "harbor/ftp/sample_user_manager"
+require "harbor/ftp/user_managers/hash_user_manager"
 require "thread"
+
+user_manager = Harbor::FTP::UserManagers::HashUserManager.new
+user_manager.add_user "me", "secret"
 
 server = Harbor::FTP::Server.new
 server.port = 21
-server.user_manager = Harbor::FTP::SampleUserManager.setup("me", "secret")
+server.user_manager = user_manager
+
 ftp_thread = Thread.new { server.start }
 
 run MyAwesomeWebApp

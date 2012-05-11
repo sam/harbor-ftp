@@ -21,7 +21,7 @@ class Harbor
       end
       
       def user_manager=(value)
-        @user_manager = value
+        @user_manager = ReadonlyUserManagerAdapter.new(value)
       end
       
       def start

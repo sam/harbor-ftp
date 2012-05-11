@@ -59,5 +59,11 @@ describe Harbor::FTP::Server do
     it "must default to nil" do
       @server.user_manager.must_be_nil
     end
+    
+    it "should require a UserManager instance" do
+      assert_raises(ArgumentError) do
+        @server.user_manager = "cow"
+      end
+    end
   end
 end
