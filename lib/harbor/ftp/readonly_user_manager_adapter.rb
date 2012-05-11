@@ -26,7 +26,7 @@ class Harbor
       #
       #   User getUserByName(String username) throws FtpException;
       def get_user_by_name(username)
-        @user_manager.get_user_by_name(username)
+        UserAdapter.new(@user_manager.get_user_by_name(username))
         # return org.apache.ftpserver.ftplet.User
       end
       

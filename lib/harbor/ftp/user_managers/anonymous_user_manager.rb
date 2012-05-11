@@ -9,7 +9,7 @@ class Harbor
         
         def initialize
           super
-          add_user("anonymous", nil, DEFAULT_HOME)
+          add_user("anonymous", "", DEFAULT_HOME)
         end
       
       end # class HashUserManager
