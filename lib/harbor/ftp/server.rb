@@ -13,7 +13,7 @@ class Harbor
         @user_manager = ReadonlyUserManagerAdapter.new(UserManagers::AnonymousUserManager.new)
       end
       
-      attr_reader :port, :user_manager
+      attr_reader :port
       
       def port=(value)
         raise RunningConfigurationChangeError.new("port") if @started
@@ -24,6 +24,11 @@ class Harbor
       
       def user_manager=(value)
         @user_manager = ReadonlyUserManagerAdapter.new(value)
+      end
+      
+      # This returns the wrapped UserManager implementation.
+      def user_manager
+        @user_manager.user_manager
       end
       
       def start
