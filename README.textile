@@ -1,4 +1,30 @@
-h1. Setup
+h1. Harbor FTP Server
+
+Harbor FTP Server is a wrapper for the "Apache FtpServer":http://mina.apache.org/ftpserver/ project. It allows you to run a scriptable FTP server in a way not dissimilar to writing a Harbor (or Rails, or Sinatra) Web Application.
+
+Since it's JRuby only, the intended deployment scenario would be starting it up in a background thread embedded in your web-application. There's nothing preventing you from running it stand-alone however (and this is actually a requirement if you're using a version of Harbor pre 1.0 since the Harbor namespace is a class now, not a module).
+
+h2. Purpose
+
+This project was developed as a replacement for ProFTPd to support three primary goals:
+
+1. Allow you to integrate FTP Logins with your Web Application's User database (even with passwords encrypted using "BCrypt":http://bcrypt-ruby.rubyforge.org/), which ProFTPd's @mod_sql@ extension does not support
+2. Allow Routing of particular request paths in a fashion that should be familiar to users of Ruby MVC Frameworks
+3. Allow additional hooking of any FTP Command (such as file-uploads using the STOR command) for additional pre or post processing
+
+To accomplish this we strongly encourage you use "Sequel":http://sequel.rubyforge.org/ as your O/RM (though Sequel will happily live side-by-side with the other major O/RMs) and PostgreSQL as your database server.
+
+h2. Requirements
+
+* JRuby 1.6.7 or above (the Apache FtpServer is a Java library, so this is a hard requirement)
+* Ruby 1.9 Syntax Mode (this project is not compatible with Ruby 1.8 syntax)
+
+h3. Tested With
+
+* JRuby 1.7.dev (installed with @rvm install jruby-head@)
+* "H2":http://h2database.com/html/main.html and "PostgreSQL 9.1.1":http://www.postgresql.org/ was used to develop the Sequel UserManager
+
+h2. Setup
 
 All necessary Java JAR dependencies are included. Just bundle your Ruby dependencies from the Gemfile.
 
