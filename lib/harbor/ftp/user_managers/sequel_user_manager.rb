@@ -1,5 +1,5 @@
 require "sequel"
-require "harbor/ftp/user"
+require_relative "sequel_user_manager/user"
 
 class Harbor
   module FTP

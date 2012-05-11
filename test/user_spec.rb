@@ -1,9 +1,9 @@
 require "helper"
 
-describe Harbor::FTP::User do
+describe Harbor::FTP::UserManagers::SequelUserManager::User do
   
   before do
-    @user = Harbor::FTP::User.spawn
+    @user = Harbor::FTP::UserManagers::SequelUserManager::User.spawn
   end
   
   describe "fields" do

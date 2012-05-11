@@ -11,6 +11,10 @@ class Harbor
         @user_manager = user_manager
       end
       
+      def user_manager
+        @user_manager
+      end
+      
       # Get user by name.
       #
       # @param username the name to search for.

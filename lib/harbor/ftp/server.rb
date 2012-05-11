@@ -1,3 +1,5 @@
+require "harbor/ftp/user_managers/anonymous_user_manager"
+
 class Harbor
   module FTP
     class Server
@@ -8,7 +10,7 @@ class Harbor
       def initialize
         @started = false
         @port = 21
-        @user_manager = nil
+        @user_manager = ReadonlyUserManagerAdapter.new(UserManagers::AnonymousUserManager.new)
       end
       
       attr_reader :port, :user_manager

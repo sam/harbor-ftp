@@ -1,3 +1,5 @@
+require_relative "user_managers/user"
+
 class Harbor
   module FTP
     module UserManager

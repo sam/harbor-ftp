@@ -11,7 +11,7 @@ class Harbor
         end
       
         def add_user(username, password, home_directory = DEFAULT_HOME)
-          @users[username] = [ username, password, home_directory ]
+          @users[username] = User.new username, password, home_directory
         end
       
         def get_user_by_name(username)

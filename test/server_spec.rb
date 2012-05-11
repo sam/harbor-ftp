@@ -56,8 +56,14 @@ describe Harbor::FTP::Server do
       @server.must_respond_to :user_manager=
     end
     
-    it "must default to nil" do
-      @server.user_manager.must_be_nil
+    it "must default to AnonymousUserManager" do
+      # Here we want to test the implementation, not the Adapater,
+      # which is what is returned by Server#user_manager.
+      # The Adapter provides a #user_manager method to access the
+      # underlying implementation class, so that's why you
+      # see us call the #user_manager method off of the return
+      # value from Server#user_manager.
+      @server.user_manager.user_manager.must_be_kind_of(Harbor::FTP::UserManagers::AnonymousUserManager)
     end
     
     it "should require a UserManager instance" do
