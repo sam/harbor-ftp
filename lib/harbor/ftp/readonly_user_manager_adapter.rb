@@ -1,3 +1,5 @@
+require "harbor/ftp/user_adapter"
+
 class Harbor
   module FTP
     # This class is for internal use only. To implement your own UserManager see
