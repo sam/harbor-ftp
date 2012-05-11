@@ -70,3 +70,4 @@ h2. TODO
 * Create a much simpler facade in Ruby to configure and start server
 ** Tests
 * Provide base Ruby implementations as reference for common tasks like integrating with your own user authentication system, or overriding the LIST command, etc
+* Add an AnonymousUserManager and make it the default
