@@ -25,48 +25,27 @@ describe Harbor::FTP::UserAdapter do
     end
   end
   
-  describe "ftp_username" do
-    it "should be set by the wrapped User" do
-      mock = MiniTest::Mock.new
-      mock.expect :ftp_username, "bob"
-      mock.expect :ftp_home_directory, "/root"
+  describe "wrapped values" do
+    before do
+      @mock = MiniTest::Mock.new
+      @mock.expect :ftp_username, "bob"
+      @mock.expect :ftp_home_directory, "/root"
       
-      user = Harbor::FTP::UserAdapter.new(mock)
-      mock.verify
-      user.name.must_equal "bob"
+      @user = Harbor::FTP::UserAdapter.new(@mock)
+    end
+    
+    describe "name" do
+      it "should be set by ftp_username method on the wrapped User" do
+        @mock.verify
+        @user.name.must_equal "bob"
+      end
+    end
+    
+    describe "home_directory" do
+      it "should be set by ftp_home_directory method on the wrapped User" do
+        @mock.verify
+        @user.home_directory.must_equal "/root"
+      end
     end
   end
-  
 end
-
-# class Harbor
-#   module FTP
-#     # This class is intended for internal use only, adapting your own simple
-#     # User objects to the org.apache.ftpserver.ftplet.User interface.
-#     class UserAdapter
-#       
-#       include org.apache.ftpserver.ftplet.User
-#       
-#       def initialize(user)
-#         @name = user.ftp_username
-#         @home_directory = user.ftp_home_directory
-#         @authorities = []
-#         @max_idle_time = user.respond_to?(:ftp_max_idle_time) ? user.ftp_max_idle_time : 0
-#       end
-#       
-#       attr_accessor :name, :home_directory, :authorities, :max_idle_time
-#       
-#       def enabled?
-#         true
-#       end
-#       
-#       # We do not expose the password here since it's unnecessary and
-#       # may not be available depending on your wrapped user's password
-#       # implementation.
-#       def password
-#         nil
-#       end
-#       
-#     end # class UserAdapter
-#   end # module FTP
-# end # class Harbor
