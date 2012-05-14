@@ -38,9 +38,13 @@ describe Harbor::FTP::UserManagers::AnonymousUserManager do
       end
     end # it
     
-    # it "should download a test file" do
-    #   skip
-    #   ftp.getbinaryfile("test.dat")
-    # end
+    it "should download a test file" do
+      tmp = "/tmp/test.dat"
+      Helper::ftp("anonymous:me%40example.com@localhost:#{@server.port}") do |connection|
+        connection.chdir("samples")
+        connection.getbinaryfile("test.dat", tmp)
+        connection.size("test.dat").must_equal(File::size(tmp))
+      end
+    end
   end
 end

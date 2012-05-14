@@ -7,15 +7,7 @@ class Harbor
     # Harbor::FTP::UserManagers::HashUserManager for an example implementation.
     class ReadonlyUserManagerAdapter
       
-      # There seems to be an odd conflict including an interface, and
-      # including a package, then referring to other classes in the same
-      # name-space. I get an ArgumentError:
-      #
-      #   org.jruby.exceptions.RaiseException: (ArgumentError) Java package `org.apache.ftpserver.ftplet' does not have a method `+'
-      # 
-      # So I've had to use the "Java::" long-form to refer to AnonymousAuthentication, etc.
-      # (refer to #authenticate below)
-      # include_package org.apache.ftpserver.ftplet
+      include_package "org.apache.ftpserver.usermanager"
       
       include org.apache.ftpserver.ftplet.UserManager
       
@@ -95,21 +87,21 @@ class Harbor
       #   User authenticate(Authentication authentication) throws AuthenticationFailedException;
       def authenticate(authentication)
         
-        if authentication.is_a?(Java::OrgApacheFtpserverUsermanager::AnonymousAuthentication)
+        if authentication.is_a?(AnonymousAuthentication)
           if user = @user_manager.get_user_by_name("anonymous")
             UserAdapter.new(user)
           else
             raise AuthenticationFailedException.new("Anonymous login disabled")
           end
-        elsif authentication.is_a?(Java::OrgApacheFtpserverUsermanager::UsernamePasswordAuthentication)
+        elsif authentication.is_a?(UsernamePasswordAuthentication)
           user = @user_manager.get_user_by_name(authentication.username)
           if user.password == authentication.password
             UserAdapter.new(user)
           else
-            raise Java::OrgApacheFtpserverUsermanager::AuthenticationFailedException.new("Authentication failed")
+            raise AuthenticationFailedException.new("Authentication failed")
           end
         else
-          raise Java::OrgApacheFtpserverUsermanager::AuthenticationFailedException.new("Authentication method not recognized")
+          raise AuthenticationFailedException.new("Authentication method not recognized")
         end
       end
 

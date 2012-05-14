@@ -5,12 +5,18 @@ class Harbor
     class UserAdapter
       
       include org.apache.ftpserver.ftplet.User
+      include_package "org.apache.ftpserver.usermanager.impl"
       
       def initialize(user)
         @name = user.ftp_username
         @home_directory = user.ftp_home_directory
-        @authorities = []
         @max_idle_time = user.respond_to?(:ftp_max_idle_time) ? user.ftp_max_idle_time : 0
+        
+        @authorities = []
+        
+        @authorities << WritePermission.new
+        @authorities << ConcurrentLoginPermission.new(0, 0)
+        @authorities << TransferRatePermission.new(0, 0)
       end
       
       attr_accessor :name, :home_directory, :authorities, :max_idle_time
@@ -27,7 +33,11 @@ class Harbor
       end
       
       def authorize(request)
-        true
+        @authorities.each do |authority|
+          if authority.can_authorize(request)
+            return authority.authorize(request)
+          end
+        end
       end
       
     end # class UserAdapter
