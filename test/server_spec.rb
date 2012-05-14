@@ -1,9 +1,22 @@
-require "helper"
-require "thread"
+require_relative "helper"
 
 describe Harbor::FTP::Server do
   before do
     @server = Harbor::FTP::Server.new
+  end
+  
+  describe "start/stop state" do
+    it "should be stoppable" do
+      @server.port = Helper::next_port
+      @server.start
+      assert @server.stop
+    end
+
+    it "should raise an error when stopping if not started" do
+      assert_raises(Harbor::FTP::Server::ServerNotStartedError) do
+        @server.stop
+      end
+    end
   end
   
   describe "port" do
@@ -35,14 +48,15 @@ describe Harbor::FTP::Server do
     end
     
     it "must not be able to change the port after the server is started" do
-      @server.port = 2121
+      @server.port = Helper::next_port
       thread = Thread.new { @server.start }
-      sleep 0.1 # Ensure that the thread/server has time to start.
+      sleep 0.5 # Ensure that the thread/server has time to start.
       
       assert_raises(Harbor::FTP::Server::RunningConfigurationChangeError) do
         @server.port = 4141
       end
       
+      @server.stop
       Thread.kill(thread)
     end
   end

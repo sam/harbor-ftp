@@ -1,4 +1,5 @@
 require "harbor/ftp/user_managers/anonymous_user_manager"
+require "thread"
 
 class Harbor
   module FTP
@@ -11,6 +12,8 @@ class Harbor
         @started = false
         @port = 21
         @user_manager = ReadonlyUserManagerAdapter.new(UserManagers::AnonymousUserManager.new)
+        @server = nil
+        @semaphore = Mutex.new
       end
       
       attr_reader :port
@@ -19,11 +22,15 @@ class Harbor
         raise RunningConfigurationChangeError.new("port") if @started
         raise InvalidPortError.new unless value.is_a?(Fixnum)
         raise PortNotInRange.new unless (2..65535).include?(value)
-        @port = value
+        @semaphore.synchronize do
+          @port = value
+        end
       end
       
       def user_manager=(value)
-        @user_manager = ReadonlyUserManagerAdapter.new(value)
+        @semaphore.synchronize do
+          @user_manager = ReadonlyUserManagerAdapter.new(value)
+        end
       end
       
       # This returns the wrapped UserManager implementation.
@@ -32,25 +39,44 @@ class Harbor
       end
       
       def start
-        raise ServerAlreadyStartedError.new if @started
-        @started = true
+        @semaphore.synchronize do
+          raise ServerAlreadyStartedError.new if @started
+          @started = true
 
-        # Setup your server:
-        server_factory = FtpServerFactory.new
-        listener_factory = ListenerFactory.new
+          # Setup your server:
+          server_factory = FtpServerFactory.new
+          listener_factory = ListenerFactory.new
 
-        listener_factory.port = @port
+          listener_factory.port = @port
 
-        server_factory.user_manager = @user_manager if @user_manager
+          server_factory.user_manager = @user_manager if @user_manager
         
-        server_factory.add_listener "default", listener_factory.create_listener
+          server_factory.add_listener "default", listener_factory.create_listener
 
-        server = server_factory.create_server
+          @server = server_factory.create_server
         
-        server.start
+          @server.start
+        end
+      end
+      
+      def stop
+        @semaphore.synchronize do
+          if @server && @started
+            @server.stop
+            true
+          else
+            raise ServerNotStartedError.new
+          end
+        end
       end
       
       class ServerAlreadyStartedError < StandardError
+      end
+      
+      class ServerNotStartedError < StandardError
+        def initialize
+          super("The server isn't running, so can't stop won't stop.")
+        end
       end
       
       class RunningConfigurationChangeError < StandardError
