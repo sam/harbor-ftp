@@ -101,7 +101,7 @@ class Harbor
           else
             raise AuthenticationFailedException.new("Anonymous login disabled")
           end
-        elsif authentication.is_a?(Java::OrgApacheFtpserverUsermanager::UsernamePasswordAuthentication.class)
+        elsif authentication.is_a?(Java::OrgApacheFtpserverUsermanager::UsernamePasswordAuthentication)
           user = @user_manager.get_user_by_name(authentication.username)
           if user.password == authentication.password
             UserAdapter.new(user)
