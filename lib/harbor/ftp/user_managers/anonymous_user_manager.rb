@@ -11,6 +11,10 @@ class Harbor
           super
           add_user("anonymous", "", DEFAULT_HOME)
         end
+        
+        def home_directory=(home_directory)
+          add_user("anonymous", "", home_directory)
+        end
       
       end # class HashUserManager
     end # module UserManagers
