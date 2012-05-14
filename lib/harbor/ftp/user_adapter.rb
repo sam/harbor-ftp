@@ -33,7 +33,7 @@ class Harbor
       end
       
       def authorize(request)
-        if authority = @authorities.detect { |authority| authority.can_authorize(request) }
+        if authority = @authorities.detect { |a| a.can_authorize(request) }
           authority.authorize(request)
         end
       end
