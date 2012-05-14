@@ -6,6 +6,17 @@ class Harbor
     # the Harbor::FTP::UserManager module for the interface and
     # Harbor::FTP::UserManagers::HashUserManager for an example implementation.
     class ReadonlyUserManagerAdapter
+      
+      # There seems to be an odd conflict including an interface, and
+      # including a package, then referring to other classes in the same
+      # name-space. I get an ArgumentError:
+      #
+      #   org.jruby.exceptions.RaiseException: (ArgumentError) Java package `org.apache.ftpserver.ftplet' does not have a method `+'
+      # 
+      # So I've had to use the "Java::" long-form to refer to AnonymousAuthentication, etc.
+      # (refer to #authenticate below)
+      # include_package org.apache.ftpserver.ftplet
+      
       include org.apache.ftpserver.ftplet.UserManager
       
       def initialize(user_manager)
@@ -83,24 +94,22 @@ class Harbor
       #
       #   User authenticate(Authentication authentication) throws AuthenticationFailedException;
       def authenticate(authentication)
-        raise AuthenticationFailedException.new
         
-        case authentication
-        when AnonymousAuthentication then
+        if authentication.is_a?(Java::OrgApacheFtpserverUsermanager::AnonymousAuthentication)
           if user = @user_manager.get_user_by_name("anonymous")
             UserAdapter.new(user)
           else
-            raise AuthenticationFailedException.new
+            raise AuthenticationFailedException.new("Anonymous login disabled")
           end
-        when UsernamePasswordAuthentication then
+        elsif authentication.is_a?(Java::OrgApacheFtpserverUsermanager::UsernamePasswordAuthentication.class)
           user = @user_manager.get_user_by_name(authentication.username)
           if user.password == authentication.password
             UserAdapter.new(user)
           else
-            raise AuthenticationFailedException.new
+            raise Java::OrgApacheFtpserverUsermanager::AuthenticationFailedException.new("Authentication failed")
           end
         else
-          raise AuthenticationFailedException.new
+          raise Java::OrgApacheFtpserverUsermanager::AuthenticationFailedException.new("Authentication method not recognized")
         end
       end
 

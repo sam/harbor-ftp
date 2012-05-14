@@ -26,6 +26,10 @@ class Harbor
         nil
       end
       
+      def authorize(request)
+        true
+      end
+      
     end # class UserAdapter
   end # module FTP
 end # class Harbor

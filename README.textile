@@ -71,3 +71,4 @@ h2. TODO
 * Provide base Ruby implementations as reference for common tasks like integrating with your own user authentication system, or overriding the LIST command, etc
 * Add an AnonymousUserManager and make it the default
 * Add Server#timeout, refer to org.apache.ftpserver.ftplet.User.getMaxIdleTime()
+* UserAdapter#authorize is currently stubbed to true
