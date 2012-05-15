@@ -10,10 +10,10 @@ Gem::Specification.new do |s|
   s.platform = "java"
   s.require_path = "lib"
   s.files = %w(Rakefile harbor-ftp.gemspec README.textile) + Dir.glob("lib/**/*") + Dir.glob("jars/*")
-
-  s.add_dependency "logging"
-  s.add_dependency "sequel"
   
+  s.add_development_dependency "sequel"
   s.add_development_dependency "spawn"
   s.add_development_dependency "faker"
+  s.add_development_dependency "minitest"
+  s.add_development_dependency "minitest-wscolor"
 end

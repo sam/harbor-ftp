@@ -20,12 +20,15 @@ DB = Sequel.connect("jdbc:h2:mem:")
 Sequel.extension :migration
 Sequel::Migrator.run(DB, Pathname(__FILE__).dirname.parent + "db/migrations")
 
+Sequel.extension :inflector
+
 require_relative "data/user"
 
 require "thread"
 require "net/ftp"
 require "uri"
 require "cgi"
+require "fileutils"
 
 class Helper
   
@@ -56,6 +59,42 @@ class Helper
     yield connection
   ensure
     connection.close unless connection.closed?
+  end
+  
+  module FTP
+    class Server
+      
+      attr_reader :home_directory, :port
+
+      def initialize(user_manager)
+        @user_manager = user_manager
+        @home_directory = Pathname(__FILE__).dirname.parent + "tmp" + "#{File::basename(@user_manager.class.name.underscore)}_test" 
+        @port = Helper::next_port
+      end
+      
+      def start
+        FileUtils::rm_rf @home_directory if File.exists?(@home_directory)
+        FileUtils::mkdir @home_directory
+        FileUtils::mkdir @home_directory + "samples"
+        File::open(@home_directory + "samples" + "test.dat", "w+") do |file|
+          file << Faker::Lorem::paragraphs
+        end
+
+        @server = Harbor::FTP::Server.new
+        @server.user_manager = @user_manager
+        @server.port = @port
+        @server_thread = Thread.new { @server.start }
+        sleep 0.1 # Give the server time to start up.
+        self
+      end
+      
+      def stop
+        @server.stop
+        Thread.kill(@server_thread)
+        FileUtils::rm_rf @home_directory
+        self
+      end
+    end
   end
 end
 
