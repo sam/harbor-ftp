@@ -60,7 +60,7 @@ ftp_thread = Thread.new { server.start }
 
 run MyAwesomeWebApp
 
-ftp_thread.join
+server.stop
 
 p. And that's it.
 

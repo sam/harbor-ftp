@@ -16,4 +16,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency "faker"
   s.add_development_dependency "minitest"
   s.add_development_dependency "minitest-wscolor"
+  s.add_development_dependency "bcrypt-ruby"
 end

@@ -57,7 +57,6 @@ describe Harbor::FTP::Server do
       end
       
       @server.stop
-      Thread.kill(thread)
     end
   end
   

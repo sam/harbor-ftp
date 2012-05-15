@@ -83,7 +83,9 @@ class Helper
         @server = Harbor::FTP::Server.new
         @server.user_manager = @user_manager
         @server.port = @port
-        @server_thread = Thread.new { @server.start }
+        @server_thread = Thread.new do
+          @server.start
+        end
         sleep 0.5 # Give the server time to start up.
         self
       end
@@ -91,7 +93,6 @@ class Helper
       def stop
         @server.stop
         sleep 0.5 # Give the server time to stop.
-        Thread.kill(@server_thread)
         FileUtils::rm_rf @home_directory
         self
       end
