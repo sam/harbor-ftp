@@ -7,10 +7,10 @@ class Harbor
       include org.apache.ftpserver.ftplet.User
       include_package "org.apache.ftpserver.usermanager.impl"
       
-      def initialize(user)
+      def initialize(user, timeout = 0)
         @name = user.ftp_username
         @home_directory = user.ftp_home_directory
-        @max_idle_time = user.respond_to?(:ftp_max_idle_time) ? user.ftp_max_idle_time : 0
+        @max_idle_time = user.respond_to?(:ftp_max_idle_time) ? user.ftp_max_idle_time : timeout
         
         @authorities = []
         

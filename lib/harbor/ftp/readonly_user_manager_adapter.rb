@@ -11,6 +11,8 @@ class Harbor
       
       include org.apache.ftpserver.ftplet.UserManager
       
+      attr_accessor :timeout
+      
       def initialize(user_manager)
         raise ArgumentError.new("+user_manager+ must include the UserManager module") unless user_manager.is_a?(Harbor::FTP::UserManager)
         @user_manager = user_manager
@@ -29,7 +31,7 @@ class Harbor
       #
       #   User getUserByName(String username) throws FtpException;
       def get_user_by_name(username)
-        UserAdapter.new(@user_manager.get_user_by_name(username))
+        UserAdapter.new(@user_manager.get_user_by_name(username), @timeout)
         # return org.apache.ftpserver.ftplet.User
       end
       
@@ -89,14 +91,14 @@ class Harbor
         
         if authentication.is_a?(AnonymousAuthentication)
           if user = @user_manager.get_user_by_name("anonymous")
-            UserAdapter.new(user)
+            UserAdapter.new(user, @timeout)
           else
             raise AuthenticationFailedException.new("Anonymous login disabled")
           end
         elsif authentication.is_a?(UsernamePasswordAuthentication)
           user = @user_manager.get_user_by_name(authentication.username)
           if user.password == authentication.password
-            UserAdapter.new(user)
+            UserAdapter.new(user, @timeout)
           else
             raise AuthenticationFailedException.new("Authentication failed")
           end

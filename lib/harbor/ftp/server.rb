@@ -12,11 +12,12 @@ class Harbor
         @started = false
         @port = 21
         @user_manager = ReadonlyUserManagerAdapter.new(UserManagers::AnonymousUserManager.new)
+        @timeout = @user_manager.timeout = 300
         @server = nil
         @semaphore = Mutex.new
       end
       
-      attr_reader :port
+      attr_reader :port, :timeout
       
       def port=(value)
         raise RunningConfigurationChangeError.new("port") if @started
@@ -27,9 +28,17 @@ class Harbor
         end
       end
       
+      def timeout=(value)
+        @semaphore.synchronize do
+          @timeout = value
+        end
+      end
+      
       def user_manager=(value)
         @semaphore.synchronize do
           @user_manager = ReadonlyUserManagerAdapter.new(value)
+          @user_manager.timeout = @timeout
+          @user_manager
         end
       end
       
