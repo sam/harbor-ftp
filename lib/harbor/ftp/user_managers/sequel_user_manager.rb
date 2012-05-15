@@ -7,17 +7,21 @@ class Harbor
       class SequelUserManager
         include UserManager
       
+        def initialize(user_model = SequelUserManager::User)
+          @user_model = user_model
+        end
+        
         def get_user_by_name(username)
-          DB[:users].find(:email => username)
+          @user_model.first(:email => username)
         end
       
         def get_all_user_names
-          DB[:users].map(:email)
+          @user_model.map(:email)
         end
       
         def exists?(username)
-          DB.select(1).where(
-            DB[:users].filter(:email => username).exists
+          @user_model.select(1).where(
+            @user_model.filter(:email => username).exists
           ).single_value == 1
         end
       

@@ -84,12 +84,13 @@ class Helper
         @server.user_manager = @user_manager
         @server.port = @port
         @server_thread = Thread.new { @server.start }
-        sleep 0.1 # Give the server time to start up.
+        sleep 0.5 # Give the server time to start up.
         self
       end
       
       def stop
         @server.stop
+        sleep 0.5 # Give the server time to stop.
         Thread.kill(@server_thread)
         FileUtils::rm_rf @home_directory
         self

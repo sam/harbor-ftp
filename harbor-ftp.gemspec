@@ -1,4 +1,4 @@
-require 'harbor/ftp/version'
+require_relative "lib/harbor/ftp/version"
 
 Gem::Specification.new do |s|
   s.name = "harbor-ftp"
