@@ -88,6 +88,5 @@ We define a @Harbor::FTP::UserManager@ module for instance, that @Harbor::FTP::U
 
 h2. TODO
 
-* Implement our own simple UserManager (see: http://svn.apache.org/viewvc/mina/ftpserver/trunk/ftplet-api/src/main/java/org/apache/ftpserver/ftplet/UserManager.java?view=markup)
 * Provide base Ruby implementations as reference for common tasks like integrating with your own user authentication system, or overriding the LIST command, etc
 * Add Server#timeout, refer to org.apache.ftpserver.ftplet.User.getMaxIdleTime()
