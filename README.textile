@@ -64,6 +64,28 @@ ftp_thread.join
 
 p. And that's it.
 
+h2. Design
+
+Here we'll briefly cover the implementation details of the project in case you want to walk through it or contribute.
+
+The project's main entry point is @lib/harbor/ftp.rb@. This file requires all the basics for you. Additional files are under the @lib/harbor/ftp@ folder. The Java dependencies are under @jars@.
+
+In the root directory you'll see the standard stuff such as @Rakefile@, @Gemfile@, @harbor-ftp.gemspec@, a @bin/harbor-ftp@ to start the server stand-alone, and the @test@ folder.
+
+For testing we're using Ruby 1.9's @MiniTest::Spec@. For database integration tests we're using @Sequel@, and @Spawn@ (a trivially simple fixture-replacement library). The data factories are at @test/data@.
+
+The main library is a wrapper around Apache's FtpServer library. It doesn't have the prettiest interface, but this project aims to solve that through the use of the "Adapter Pattern":http://c2.com/cgi/wiki?AdapterPattern.
+
+As a simple example, the Apache project defines an @org.apache.ftpserver.ftplet.User@ Interface. If you're not familiar with Interfaces that's OK. They just define a "contract" of methods that an object must implement in order to be compatible with some other code. This particular Interface is a bit more complex than we need though. We really only need to implement two methods (@#ftp_username@ and @#home_directory@).
+
+This is where the @Harbor::FTP::UserAdapter@ comes in. You give it an object that responds to those two methods, and it'll wrap your object, implementing the rest of the @org.apache.ftpserver.ftplet.User@ Interface for you to maintain compatibility with the Apache FtpServer project.
+
+So if there's an overall design theme to this project, this is it. Adapters implementing the actual Apache project Interfaces, allowing you to implement a much simpler duck-typed Ruby version.
+
+We define a @Harbor::FTP::UserManager@ module for instance, that @Harbor::FTP::UserManagers::HashUserManager@ implements. Both of these are rather straight-forward and simplistic. The heavy lifting is done for you in @Harbor::FTP::ReadonlyUserManagerAdapter@. It takes that simplified @Harbor::FTP::UserManager@ Interface, wraps it, and implements all the rest of the technical details for you.
+
+@Harbor::FTP::Server@ then takes the @Harbor::FTP::UserManager@ implementation you assign (under @lib/harbor/ftp/user_managers@), wraps it in a @Harbor::FTP::ReadonlyUserManagerAdapter@, and whenever the server is returned a @User@ object by the adapter, it wraps it with a @Harbor::FTP::UserAdapter@ before passing it onto the internals of the Apache FtpServer.
+
 h2. TODO
 
 * Implement our own simple UserManager (see: http://svn.apache.org/viewvc/mina/ftpserver/trunk/ftplet-api/src/main/java/org/apache/ftpserver/ftplet/UserManager.java?view=markup)
