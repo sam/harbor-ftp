@@ -31,7 +31,7 @@ describe Harbor::FTP::UserManagers::HashUserManager do
       end
     end
     
-    it "should authorize bob" do
+    it "should authorize bob in a different home directory" do
       FileUtils::mkdir(@server.home_directory + "bob")
       File::open(@server.home_directory + "bob" + "secrets.txt", "w+") do |file|
         file << Faker::Lorem::paragraphs
