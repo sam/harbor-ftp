@@ -83,16 +83,20 @@ class Helper
         @server = Harbor::FTP::Server.new
         @server.user_manager = @user_manager
         @server.port = @port
-        @server_thread = Thread.new do
+        Thread.new do
           @server.start
         end
-        sleep 0.5 # Give the server time to start up.
+        # I'm not really sure if this is necessary. I think it depends
+        # on what you do after this returns. If you're going to go create
+        # files to test with and such, it's probably unnecessary.
+        # If you're going to try to immediately connect, then you might
+        # run into timing issues without some sort of brief sleep.
+        # sleep 0.5 # Give the server time to start up.
         self
       end
       
       def stop
         @server.stop
-        sleep 0.5 # Give the server time to stop.
         FileUtils::rm_rf @home_directory
         self
       end

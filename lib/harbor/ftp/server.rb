@@ -29,6 +29,7 @@ class Harbor
       end
       
       def timeout=(value)
+        raise InvalidTimeoutError.new unless value.is_a?(Fixnum)
         @semaphore.synchronize do
           @timeout = value
         end
@@ -105,6 +106,13 @@ class Harbor
           super("+port+ must be a Fixnum")
         end
       end
+      
+      class InvalidTimeoutError < StandardError
+        def initialize
+          super("+timeout+ must be a Fixnum")
+        end
+      end
+      
     end # class Server
   end # module FTP
 end # class Harbor

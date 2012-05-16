@@ -60,6 +60,38 @@ describe Harbor::FTP::Server do
     end
   end
   
+  describe "timeout" do
+    it "must default to 300" do
+      @server.timeout.must_equal 300
+    end
+    
+    it "must be a Fixnum" do
+      assert_raises(Harbor::FTP::Server::InvalidTimeoutError) do
+        @server.timeout = "one"
+      end
+      
+      assert_raises(Harbor::FTP::Server::InvalidTimeoutError) do
+        @server.timeout = nil
+      end
+    end
+    
+    it "can be set to 0" do
+      @server.timeout = 0
+      @server.timeout.must_equal 0
+    end
+    
+    it "must be able to change the timeout after the server is started" do
+      @server.port = Helper::next_port
+      Thread.new { @server.start }
+      sleep 0.5 # Ensure that the thread/server has time to start.
+      
+      @server.timeout = 9000
+      @server.timeout.must_equal 9000
+      
+      @server.stop
+    end
+  end
+  
   describe "user_manager" do
     it "must respond to a user_manager reader" do
       @server.must_respond_to :user_manager
