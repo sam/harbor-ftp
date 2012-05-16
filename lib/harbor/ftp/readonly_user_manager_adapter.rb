@@ -8,6 +8,7 @@ class Harbor
     class ReadonlyUserManagerAdapter
       
       include_package "org.apache.ftpserver.usermanager"
+      include_package "org.apache.ftpserver.ftplet"
       
       include org.apache.ftpserver.ftplet.UserManager
       

@@ -33,6 +33,6 @@ server.user_manager = user_manager
 server.start
 
 __END__
-sam, secret, /Users/home/sam/ftp
-bob, secret, /Users/home/bob/ftp
-fred, funky, /tmp
+sam,secret,/Users/home/sam/ftp
+bob,secret,/Users/home/bob/ftp
+fred,funky,/tmp
