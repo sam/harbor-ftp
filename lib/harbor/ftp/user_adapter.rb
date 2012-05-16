@@ -10,7 +10,13 @@ class Harbor
       def initialize(user)
         @name = user.ftp_username
         @home_directory = user.ftp_home_directory
-        @max_idle_time = user.respond_to?(:ftp_max_idle_time) ? user.ftp_max_idle_time : 0
+        
+        @user_max_idle_time = if user.respond_to?(:ftp_max_idle_time)
+          user.ftp_max_idle_time
+        else
+          0
+        end
+        @max_idle_time = @user_max_idle_time
         
         @authorities = []
         
@@ -32,7 +38,17 @@ class Harbor
       end
       
       def max_idle_time=(value)
-        @max_idle_time = value
+        if value.nil?
+          @max_idle_time = 0
+        elsif value.is_a?(Fixnum)
+          if @user_max_idle_time != 0
+            @max_idle_time = @user_max_idle_time
+          else
+            @max_idle_time = value
+          end
+        else
+          raise ArgumentError.new("+max_idle_time=+ only accepts nil or Fixnum")
+        end
       end
       
       def enabled?

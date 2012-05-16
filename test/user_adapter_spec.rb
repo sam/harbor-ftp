@@ -1,9 +1,11 @@
-require "helper"
+#!/usr/bin/env jruby
+
+require_relative "helper"
 
 describe Harbor::FTP::UserAdapter do
   
   before do
-    @bob = OpenStruct.new ftp_username: "bob", ftp_home_directory: "/tmp", max_idle_time: 60
+    @bob = OpenStruct.new ftp_username: "bob", ftp_home_directory: "/tmp", ftp_max_idle_time: 60
     @user = Harbor::FTP::UserAdapter.new(@bob)
   end
   
@@ -21,7 +23,40 @@ describe Harbor::FTP::UserAdapter do
   
   describe "max_idle_time" do
     it "must default to zero" do
+      bob = OpenStruct.new ftp_username: "bob", ftp_home_directory: "/tmp"
+      user = Harbor::FTP::UserAdapter.new(bob)
+      user.max_idle_time.must_equal 0
+    end
+    
+    it "must not be nil" do
+      @user.max_idle_time = nil
       @user.max_idle_time.must_equal 0
+    end
+    
+    it "must accept a Fixnum or nil exclusively" do
+      @user.max_idle_time = nil
+      @user.max_idle_time = 100
+      assert_raises(ArgumentError) do
+        @user.max_idle_time = "over nine thousand!"
+      end
+    end
+  end
+  
+  describe "new_with_timeout" do    
+    it "user non-zero values always take precedence" do
+      @bob.ftp_max_idle_time.must_equal 60
+      
+      user = Harbor::FTP::UserAdapter.new_with_timeout(@bob, 300)
+      user.max_idle_time.must_equal 60
+      
+      user = Harbor::FTP::UserAdapter.new_with_timeout(@bob, 30)
+      user.max_idle_time.must_equal 60
+    end
+    
+    it "unlimited users are limited by the server" do
+      @bob.ftp_max_idle_time = 0
+      user = Harbor::FTP::UserAdapter.new_with_timeout(@bob, 300)
+      user.max_idle_time.must_equal 300
     end
   end
   
