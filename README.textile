@@ -1,5 +1,7 @@
 h1. Harbor FTP Server
 
+!https://secure.travis-ci.org/sam/harbor-ftp.png!:http://travis-ci.org/sam/harbor-ftp
+
 Harbor FTP Server is a wrapper for the "Apache FtpServer":http://mina.apache.org/ftpserver/ project. It allows you to run a scriptable FTP server in a way not dissimilar to writing a Harbor (or Rails, or Sinatra) Web Application.
 
 Since it's JRuby only, the intended deployment scenario would be starting it up in a background thread embedded in your web-application. There's nothing preventing you from running it stand-alone however (and this is actually a requirement if you're using a version of Harbor pre 1.0 since the Harbor namespace is a class now, not a module).

@@ -11,6 +11,7 @@ Gem::Specification.new do |s|
   s.require_path = "lib"
   s.files = %w(Rakefile harbor-ftp.gemspec README.textile) + Dir.glob("lib/**/*") + Dir.glob("jars/*")
   
+  s.add_development_dependency "rake"
   s.add_development_dependency "sequel"
   s.add_development_dependency "spawn"
   s.add_development_dependency "faker"
