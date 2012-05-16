@@ -39,7 +39,7 @@ describe Harbor::FTP::UserManagers::SequelUserManager do
       User.truncate
     end
     
-    it "should accept an default login" do
+    it "should accept a default login" do
       Helper::ftp("bob%40example.com:secret@localhost:#{@server.port}") do |connection|
         connection.list('s*').join("\n").must_match /secrets.txt/
       end

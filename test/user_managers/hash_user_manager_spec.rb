@@ -17,7 +17,7 @@ describe Harbor::FTP::UserManagers::HashUserManager do
   
   describe "authorization" do
     
-    it "should accept an default login" do
+    it "should accept a default login" do
       Helper::ftp("sam:secret@localhost:#{@server.port}") do |connection|
         connection.chdir("samples")
         connection.list('te*').join("\n").must_match /test.dat/
