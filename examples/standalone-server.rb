@@ -34,6 +34,10 @@ end
 # to authorize your users.
 server.user_manager = user_manager
 
+# I'm a right bastard, so I'm going to set everyone's
+# idle disconnect time to just sixty seconds.
+server.timeout = 60
+
 # Unless you specifically background it in a Thread,
 # the server is blocking, so this is all you need to do.
 server.start
