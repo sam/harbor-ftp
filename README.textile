@@ -64,7 +64,7 @@ run MyAwesomeWebApp
 
 server.stop
 
-p. And that's it.
+p. And that's it. You can refer to the @examples@ folder for other examples, and there's always the @test@ folder for the specs if you have more questions!
 
 h2. Design
 
