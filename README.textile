@@ -91,3 +91,5 @@ We define a @Harbor::FTP::UserManager@ module for instance, that @Harbor::FTP::U
 h2. TODO
 
 * Provide base Ruby implementations as reference for common tasks like integrating with your own user authentication system, or overriding the LIST command, etc
+* Allow hooking COMMAND events for pre/post processing
+* Allow routing COMMANDs to your own "actions"
