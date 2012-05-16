@@ -7,11 +7,17 @@ class Harbor
       
       include_package "org.apache.ftpserver"
       include_package "org.apache.ftpserver.listener"
+      include_package "org.apache.ftpserver.command"
 
       def initialize
         @started = false
         @port = 21
         @user_manager_adapter = ReadonlyUserManagerAdapter.new(UserManagers::AnonymousUserManager.new)
+        
+        @command_factory = CommandFactoryFactory.new
+        @command_factory.use_default_commands = true
+        # cmFact.addCommand("PASV", new PASVTest());
+        
         @timeout = @user_manager_adapter.timeout = 300
         @server = nil
         @semaphore = Mutex.new
@@ -59,6 +65,7 @@ class Harbor
           listener_factory.port = @port
 
           server_factory.user_manager = @user_manager_adapter
+          server_factory.command_factory = @command_factory.create_command_factory
         
           server_factory.add_listener "default", listener_factory.create_listener
 
