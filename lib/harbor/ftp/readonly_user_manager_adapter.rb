@@ -31,8 +31,11 @@ class Harbor
       #
       #   User getUserByName(String username) throws FtpException;
       def get_user_by_name(username)
-        UserAdapter.new(@user_manager.get_user_by_name(username), @timeout)
-        # return org.apache.ftpserver.ftplet.User
+        if user = @user_manager.get_user_by_name(username)
+          UserAdapter.new_with_timeout(user, @timeout)
+        else
+          raise FtpException.new("username not found")
+        end
       end
       
       # Get all user names in the system.
@@ -91,14 +94,14 @@ class Harbor
         
         if authentication.is_a?(AnonymousAuthentication)
           if user = @user_manager.get_user_by_name("anonymous")
-            UserAdapter.new(user, @timeout)
+            UserAdapter.new_with_timeout(user, @timeout)
           else
             raise AuthenticationFailedException.new("Anonymous login disabled")
           end
         elsif authentication.is_a?(UsernamePasswordAuthentication)
           user = @user_manager.get_user_by_name(authentication.username)
           if user.password == authentication.password
-            UserAdapter.new(user, @timeout)
+            UserAdapter.new_with_timeout(user, @timeout)
           else
             raise AuthenticationFailedException.new("Authentication failed")
           end

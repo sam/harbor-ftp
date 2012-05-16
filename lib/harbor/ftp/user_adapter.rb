@@ -7,10 +7,10 @@ class Harbor
       include org.apache.ftpserver.ftplet.User
       include_package "org.apache.ftpserver.usermanager.impl"
       
-      def initialize(user, timeout = 0)
+      def initialize(user)
         @name = user.ftp_username
         @home_directory = user.ftp_home_directory
-        @max_idle_time = user.respond_to?(:ftp_max_idle_time) ? user.ftp_max_idle_time : timeout
+        @max_idle_time = user.respond_to?(:ftp_max_idle_time) ? user.ftp_max_idle_time : 0
         
         @authorities = []
         
@@ -19,7 +19,21 @@ class Harbor
         @authorities << TransferRatePermission.new(0, 0)
       end
       
-      attr_accessor :name, :home_directory, :authorities, :max_idle_time
+      def self.new_with_timeout(user, timeout)
+        user = new(user)
+        user.max_idle_time = timeout
+        user
+      end
+      
+      attr_accessor :name, :home_directory, :authorities
+      
+      def max_idle_time
+        @max_idle_time
+      end
+      
+      def max_idle_time=(value)
+        @max_idle_time = value
+      end
       
       def enabled?
         true

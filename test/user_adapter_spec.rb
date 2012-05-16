@@ -48,4 +48,10 @@ describe Harbor::FTP::UserAdapter do
       end
     end
   end
+  
+  describe "new_with_timeout" do
+    it "must be a constructor" do
+      Harbor::FTP::UserAdapter.must_respond_to(:new_with_timeout)
+    end
+  end
 end

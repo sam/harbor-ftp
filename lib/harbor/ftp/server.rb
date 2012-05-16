@@ -11,8 +11,8 @@ class Harbor
       def initialize
         @started = false
         @port = 21
-        @user_manager = ReadonlyUserManagerAdapter.new(UserManagers::AnonymousUserManager.new)
-        @timeout = @user_manager.timeout = 300
+        @user_manager_adapter = ReadonlyUserManagerAdapter.new(UserManagers::AnonymousUserManager.new)
+        @timeout = @user_manager_adapter.timeout = 300
         @server = nil
         @semaphore = Mutex.new
       end
@@ -37,15 +37,14 @@ class Harbor
       
       def user_manager=(value)
         @semaphore.synchronize do
-          @user_manager = ReadonlyUserManagerAdapter.new(value)
-          @user_manager.timeout = @timeout
-          @user_manager
+          @user_manager_adapter = ReadonlyUserManagerAdapter.new(value)
+          @user_manager_adapter.timeout = @timeout
+          value
         end
       end
       
-      # This returns the wrapped UserManager implementation.
-      def user_manager
-        @user_manager.user_manager
+      def user_manager_adapter
+        @user_manager_adapter
       end
       
       def start
@@ -59,7 +58,7 @@ class Harbor
 
           listener_factory.port = @port
 
-          server_factory.user_manager = @user_manager if @user_manager
+          server_factory.user_manager = @user_manager_adapter
         
           server_factory.add_listener "default", listener_factory.create_listener
 

@@ -75,7 +75,7 @@ describe Harbor::FTP::Server do
       end
     end
     
-    it "can be set to 0" do
+    it "can be set to 0 (unlimited)" do
       @server.timeout = 0
       @server.timeout.must_equal 0
     end
@@ -90,11 +90,15 @@ describe Harbor::FTP::Server do
       
       @server.stop
     end
+    
+    it "must propagate the timeout to the user_manager_adapter" do
+      @server.timeout.must_equal @server.user_manager_adapter.timeout
+    end
   end
   
   describe "user_manager" do
-    it "must respond to a user_manager reader" do
-      @server.must_respond_to :user_manager
+    it "must respond to a user_manager_adapter reader" do
+      @server.must_respond_to :user_manager_adapter
     end
     
     it "must respond to a user_manager writer" do
@@ -102,7 +106,7 @@ describe Harbor::FTP::Server do
     end
     
     it "must default to AnonymousUserManager" do
-      @server.user_manager.must_be_kind_of(Harbor::FTP::UserManagers::AnonymousUserManager)
+      @server.user_manager_adapter.user_manager.must_be_kind_of(Harbor::FTP::UserManagers::AnonymousUserManager)
     end
     
     it "should require a UserManager instance" do
