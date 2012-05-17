@@ -5,7 +5,8 @@ require "java"
 
 Dir[Pathname(__FILE__).dirname.parent.parent + "jars" + "*.jar"].each { |jar| require jar }
 
-# require "harbor/ftp/command"
+require "harbor/ftp/container"
+require "harbor/ftp/command"
 require "harbor/ftp/user_manager"
 require "harbor/ftp/readonly_user_manager_adapter"
 require "harbor/ftp/server"
