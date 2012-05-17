@@ -10,3 +10,11 @@ require "harbor/ftp/command"
 require "harbor/ftp/user_manager"
 require "harbor/ftp/readonly_user_manager_adapter"
 require "harbor/ftp/server"
+
+class Harbor
+  module FTP
+    def self.services
+      @services ||= Container.new
+    end
+  end
+end
