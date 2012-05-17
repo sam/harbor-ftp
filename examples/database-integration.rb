@@ -1,11 +1,14 @@
 #!/usr/bin/env jruby
 
-# If you haven't reviewed the examples/standalone-server.rb example yet,
-# stop now and go do that. For brevity's sake I'm not going to repeat
-# explanations for the basics here.
+# NOTE! **************************************************************** #
+#                                                                        #
+# If you haven't reviewed the examples/standalone-server.rb example yet, #
+# stop now and go do that. For brevity's sake I'm not going to repeat    #
+# explanations for the basics here.                                      #
+#                                                                        #
+# **************************************************************** NOTE! #
 
 require "bundler/setup"
-require "harbor/ftp"
 require "bcrypt"
 
 #### BEGIN: Database Setup...
@@ -13,6 +16,9 @@ require "bcrypt"
 # We're going to use the very amazing Sequel (http://sequel.rubyforge.org)
 # library for our example.
 require "sequel"
+
+# H2 is just an embedded database for Java,
+# similar to an Sqlite in-memory database.
 DB = Sequel.connect("jdbc:h2:mem:")
 
 # Let's create a users table real quick. We'll
@@ -56,14 +62,17 @@ class User < Sequel::Model
 end
 #### END: ...Database Setup
 
+require "harbor/ftp"
+
 import org.apache.log4j.Logger
 import org.apache.log4j.BasicConfigurator
 BasicConfigurator.configure
 
+require "harbor/ftp/user_managers/sequel_user_manager"
+
 server = Harbor::FTP::Server.new
 server.port = 2121
 
-require "harbor/ftp/user_managers/sequel_user_manager"
 # We need to pass our User object to the SequelUserManager
 # so it knows to use our own model, and not the built-in
 # stub that it would use by default,
