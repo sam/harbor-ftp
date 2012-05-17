@@ -1,7 +1,6 @@
 require "rubygems"
 require "bundler/setup" unless Object::const_defined?("Bundler")
 
-require "spawn"
 require "faker"
 require "sequel"
 
@@ -17,12 +16,7 @@ org.apache.log4j.BasicConfigurator.configure
 require "sequel"
 DB = Sequel.connect("jdbc:h2:mem:")
 
-Sequel.extension :migration
-Sequel::Migrator.run(DB, Pathname(__FILE__).dirname.parent + "db/migrations")
-
 Sequel.extension :inflector
-
-require_relative "data/user"
 
 require "thread"
 require "net/ftp"

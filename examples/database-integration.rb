@@ -74,9 +74,7 @@ server = Harbor::FTP::Server.new
 server.port = 2121
 
 # We need to pass our User object to the SequelUserManager
-# so it knows to use our own model, and not the built-in
-# stub that it would use by default,
-# (which really only exists for quick boot-strapping).
+# so it knows what model to use.
 server.user_manager = Harbor::FTP::UserManagers::SequelUserManager.new(User)
 
 # Now we'll add an account so we can login.

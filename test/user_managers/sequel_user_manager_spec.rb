@@ -1,15 +1,26 @@
 #!/usr/bin/env jruby
 
 require_relative "../helper"
+require "harbor/ftp/user_managers/sequel_user_manager"
 require "bcrypt"
 
 describe Harbor::FTP::UserManagers::SequelUserManager do
   
   describe "authorization" do
-    
-    User = Harbor::FTP::UserManagers::SequelUserManager::User
 
-    before do              
+    before do
+      
+      DB.create_table :users do
+        String :email, primary_key: true
+        String :password, null: false
+        String :ftp_home_directory, default: "/tmp"
+      end
+      
+      User = Class.new(Sequel::Model(:users)) do
+        unrestrict_primary_key
+        alias_method :ftp_username, :email    
+      end
+      
       @user_manager = Harbor::FTP::UserManagers::SequelUserManager.new(User)
       @server = Helper::FTP::Server.new(@user_manager).start
 
@@ -18,8 +29,7 @@ describe Harbor::FTP::UserManagers::SequelUserManager do
         file << Faker::Lorem::paragraphs
       end
 
-      User.create name: "Bob",
-        email: "bob@example.com",
+      User.create email: "bob@example.com",
         password: "secret",
         ftp_home_directory: (@server.home_directory + "bob")
 
@@ -28,15 +38,14 @@ describe Harbor::FTP::UserManagers::SequelUserManager do
         file << Faker::Lorem::paragraphs
       end
 
-      User.create name: "Sam",
-        email: "sam@example.com",
+      User.create email: "sam@example.com",
         password: "if wishes were fishes",
         ftp_home_directory: @server.home_directory
     end
 
     after do
       @server.stop
-      User.truncate
+      DB.drop_table :users
     end
     
     it "should accept a default login" do
@@ -63,29 +72,35 @@ describe Harbor::FTP::UserManagers::SequelUserManager do
   
   describe "custom User model" do
     
-    module BCrypted
-      class User < Sequel::Model(:bcrypted_users)
-        
-        unrestrict_primary_key
-    
-        def ftp_username
-          email
-        end
-        
-        include BCrypt
+    before do
+      DB.create_table :bcrypted_users do
+        String :email, primary_key: true
+        String :password_hash, null: true
+        String :ftp_home_directory, default: "/tmp"
+      end
+      
+      module BCrypted
+        class User < Sequel::Model(:bcrypted_users)
 
-        def password
-          @password ||= Password.new(password_hash)
-        end
+          unrestrict_primary_key
 
-        def password=(new_password)
-          @password = Password.create(new_password)
-          self.password_hash = @password
+          def ftp_username
+            email
+          end
+
+          include BCrypt
+
+          def password
+            @password ||= Password.new(password_hash)
+          end
+
+          def password=(new_password)
+            @password = Password.create(new_password)
+            self.password_hash = @password
+          end
         end
       end
-    end
-    
-    before do              
+      
       @user_manager = Harbor::FTP::UserManagers::SequelUserManager.new(BCrypted::User)
       @server = Helper::FTP::Server.new(@user_manager).start
 
@@ -101,7 +116,7 @@ describe Harbor::FTP::UserManagers::SequelUserManager do
 
     after do
       @server.stop
-      BCrypted::User.truncate
+      DB.drop_table :bcrypted_users
     end
     
     it "should be able to authenticate a with a BCrypted password" do
