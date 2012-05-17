@@ -6,22 +6,22 @@ require "bcrypt"
 
 describe Harbor::FTP::UserManagers::SequelUserManager do
   
-  describe "authorization" do
+  describe "authorization with custom key-field" do
 
     before do
       
       DB.create_table :users do
-        String :email, primary_key: true
+        String :name, primary_key: true
         String :password, null: false
         String :ftp_home_directory, default: "/tmp"
       end
       
       User = Class.new(Sequel::Model(:users)) do
         unrestrict_primary_key
-        alias_method :ftp_username, :email    
+        alias_method :ftp_username, :name    
       end
       
-      @user_manager = Harbor::FTP::UserManagers::SequelUserManager.new(User)
+      @user_manager = Harbor::FTP::UserManagers::SequelUserManager.new(User, :name)
       @server = Helper::FTP::Server.new(@user_manager).start
 
       FileUtils::mkdir(@server.home_directory + "bob")
@@ -29,7 +29,7 @@ describe Harbor::FTP::UserManagers::SequelUserManager do
         file << Faker::Lorem::paragraphs
       end
 
-      User.create email: "bob@example.com",
+      User.create name: "Bob",
         password: "secret",
         ftp_home_directory: (@server.home_directory + "bob")
 
@@ -38,7 +38,7 @@ describe Harbor::FTP::UserManagers::SequelUserManager do
         file << Faker::Lorem::paragraphs
       end
 
-      User.create email: "sam@example.com",
+      User.create name: "Sam",
         password: "if wishes were fishes",
         ftp_home_directory: @server.home_directory
     end
@@ -49,21 +49,21 @@ describe Harbor::FTP::UserManagers::SequelUserManager do
     end
     
     it "should accept a default login" do
-      Helper::ftp("bob%40example.com:secret@localhost:#{@server.port}") do |connection|
+      Helper::ftp("Bob:secret@localhost:#{@server.port}") do |connection|
         connection.list('s*').join("\n").must_match /secrets.txt/
       end
     end # it
     
     it "should download a test file" do
       tmp = "/tmp/test.dat"
-      Helper::ftp("bob%40example.com:secret@localhost:#{@server.port}") do |connection|
+      Helper::ftp("Bob:secret@localhost:#{@server.port}") do |connection|
         connection.getbinaryfile("secrets.txt", tmp)
         connection.size("secrets.txt").must_equal(File::size(tmp))
       end
     end
     
     it "should authorize sam in a different home directory" do      
-      Helper::ftp("sam%40example.com:if+wishes+were+fishes@localhost:#{@server.port}") do |connection|
+      Helper::ftp("Sam:if+wishes+were+fishes@localhost:#{@server.port}") do |connection|
         connection.chdir("lists")
         connection.list('s*').join("\n").must_match /shopping.txt/
       end
