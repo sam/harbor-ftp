@@ -28,5 +28,6 @@ class Harbor
   end # module FTP
 end # class Harbor
 
-require_relative "commands/list"
-require_relative "commands/stor"
+Dir[Pathname(__FILE__).dirname + "commands" + "*.rb"].each do |command|
+  require command
+end

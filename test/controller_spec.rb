@@ -25,10 +25,12 @@ describe Harbor::FTP::Controller do
       end
     end
     
-    [
-      :stor,
-      :list
-    ].each { |verb| specify_verb(verb) }
+    %w(
+      abor acct appe auth cdup cwd dele eprt epsv feat help lang list md5 mdtm mfmt mkd
+      mlsd mode nlst noop opts opts_mlst opts_utf8 pass pasv pbsz port prot pwd quit rein
+      rest retr rmd rnfr rnto site site_descuser site_help site_stat site_who site_zone
+      size stat stor stou stru syst type user
+    ).each { |verb| specify_verb(verb) }
     
   end
   
