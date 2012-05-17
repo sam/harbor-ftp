@@ -21,6 +21,12 @@ class Harbor
         raise NotImplementedError.new
       end
       
+      def self.inherited(target)
+        Harbor::FTP::Controller::register_command(target)
+      end
     end # class Command
   end # module FTP
 end # class Harbor
+
+require_relative "commands/list"
+require_relative "commands/stor"
