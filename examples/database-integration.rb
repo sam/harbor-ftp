@@ -63,11 +63,6 @@ end
 #### END: ...Database Setup
 
 require "harbor/ftp"
-
-import org.apache.log4j.Logger
-import org.apache.log4j.BasicConfigurator
-BasicConfigurator.configure
-
 require "harbor/ftp/user_managers/sequel_user_manager"
 
 server = Harbor::FTP::Server.new

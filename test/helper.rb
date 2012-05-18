@@ -11,8 +11,6 @@ require "minitest/wscolor"
 $:.unshift (Pathname(__FILE__).dirname.parent + "lib").to_s
 require "harbor/ftp"
 
-org.apache.log4j.BasicConfigurator.configure
-
 require "sequel"
 DB = Sequel.connect("jdbc:h2:mem:")
 

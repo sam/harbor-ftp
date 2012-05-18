@@ -3,11 +3,6 @@
 require "bundler/setup"
 require "lib/harbor/ftp"
 
-import org.apache.log4j.Logger
-import org.apache.log4j.BasicConfigurator
-
-BasicConfigurator.configure
-
 server = Harbor::FTP::Server.new
 server.port = 2121
 server.start

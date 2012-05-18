@@ -4,13 +4,6 @@ require "bundler/setup"
 require "harbor/ftp"
 require "csv"
 
-import org.apache.log4j.Logger
-import org.apache.log4j.BasicConfigurator
-
-# This basic logging configuration
-# will output details to STDOUT.
-BasicConfigurator.configure
-
 server = Harbor::FTP::Server.new
 # Set this to whatever you want.
 # On most systems you'll need to be root to run

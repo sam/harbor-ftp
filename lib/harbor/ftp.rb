@@ -3,6 +3,9 @@ $:.unshift lib unless $:.include?(lib)
 
 require "java"
 
+require "rjack-logback"
+RJack::Logback.config_console( :level => :info )
+
 Dir[Pathname(__FILE__).dirname.parent.parent + "jars" + "*.jar"].each { |jar| require jar }
 
 class Harbor
