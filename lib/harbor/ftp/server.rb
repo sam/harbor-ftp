@@ -1,3 +1,4 @@
+require "harbor/ftp/file_systems/native_file_system_factory"
 require "harbor/ftp/user_managers/anonymous_user_manager"
 require "thread"
 
@@ -19,7 +20,7 @@ class Harbor
         @command_factory.use_default_commands = true
         # cmFact.addCommand("PASV", new PASVTest());
         
-        @file_system_factory = NativeFileSystemFactory.new
+        @file_system_factory = FileSystems::NativeFileSystemFactory.new
         
         @timeout = @user_manager_adapter.timeout = 300
         @server = nil
