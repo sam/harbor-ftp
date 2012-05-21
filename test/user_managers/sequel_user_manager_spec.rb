@@ -16,12 +16,12 @@ describe Harbor::FTP::UserManagers::SequelUserManager do
         String :ftp_home_directory, default: "/tmp"
       end
       
-      User = Class.new(Sequel::Model(:users)) do
+      user = Class.new(Sequel::Model(:users)) do
         unrestrict_primary_key
-        alias_method :ftp_username, :name    
+        alias_method :ftp_username, :name
       end
       
-      @user_manager = Harbor::FTP::UserManagers::SequelUserManager.new(User, :name)
+      @user_manager = Harbor::FTP::UserManagers::SequelUserManager.new(user, :name)
       @server = Helper::FTP::Server.new(@user_manager).start
 
       FileUtils::mkdir(@server.home_directory + "bob")
@@ -29,7 +29,7 @@ describe Harbor::FTP::UserManagers::SequelUserManager do
         file << Faker::Lorem::paragraphs
       end
 
-      User.create name: "Bob",
+      user.create name: "Bob",
         password: "secret",
         ftp_home_directory: (@server.home_directory + "bob")
 
@@ -38,7 +38,7 @@ describe Harbor::FTP::UserManagers::SequelUserManager do
         file << Faker::Lorem::paragraphs
       end
 
-      User.create name: "Sam",
+      user.create name: "Sam",
         password: "if wishes were fishes",
         ftp_home_directory: @server.home_directory
     end
@@ -73,35 +73,27 @@ describe Harbor::FTP::UserManagers::SequelUserManager do
   describe "custom User model" do
     
     before do
-      DB.create_table :bcrypted_users do
+      DB.create_table :users do
         String :email, primary_key: true
         String :password_hash, null: true
         String :ftp_home_directory, default: "/tmp"
       end
       
-      module BCrypted
-        class User < Sequel::Model(:bcrypted_users)
+      user = Class.new(Sequel::Model(:users)) do
+        unrestrict_primary_key
+        alias_method :ftp_username, :email
+        
+        def password
+          @password ||= BCrypt::Password.new(password_hash)
+        end
 
-          unrestrict_primary_key
-
-          def ftp_username
-            email
-          end
-
-          include BCrypt
-
-          def password
-            @password ||= Password.new(password_hash)
-          end
-
-          def password=(new_password)
-            @password = Password.create(new_password)
-            self.password_hash = @password
-          end
+        def password=(new_password)
+          @password = BCrypt::Password.create(new_password)
+          self.password_hash = @password
         end
       end
       
-      @user_manager = Harbor::FTP::UserManagers::SequelUserManager.new(BCrypted::User)
+      @user_manager = Harbor::FTP::UserManagers::SequelUserManager.new(user)
       @server = Helper::FTP::Server.new(@user_manager).start
 
       FileUtils::mkdir(@server.home_directory + "fred")
@@ -109,14 +101,14 @@ describe Harbor::FTP::UserManagers::SequelUserManager do
         file << Faker::Lorem::paragraphs
       end
 
-      BCrypted::User.create email: "fred@example.com",
+      user.create email: "fred@example.com",
         password: "hash3y",
         ftp_home_directory: (@server.home_directory + "fred")
     end
 
     after do
       @server.stop
-      DB.drop_table :bcrypted_users
+      DB.drop_table :users
     end
     
     it "should be able to authenticate a with a BCrypted password" do

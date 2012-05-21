@@ -8,7 +8,8 @@ class Harbor
       include_package "org.apache.ftpserver"
       include_package "org.apache.ftpserver.listener"
       include_package "org.apache.ftpserver.command"
-
+      include_package "org.apache.ftpserver.filesystem.nativefs"
+      
       def initialize
         @started = false
         @port = 21
@@ -17,6 +18,8 @@ class Harbor
         @command_factory = CommandFactoryFactory.new
         @command_factory.use_default_commands = true
         # cmFact.addCommand("PASV", new PASVTest());
+        
+        @file_system_factory = NativeFileSystemFactory.new
         
         @timeout = @user_manager_adapter.timeout = 300
         @server = nil
@@ -60,12 +63,15 @@ class Harbor
 
           # Setup your server:
           server_factory = FtpServerFactory.new
+          
           listener_factory = ListenerFactory.new
-
           listener_factory.port = @port
 
           server_factory.user_manager = @user_manager_adapter
+          
           server_factory.command_factory = @command_factory.create_command_factory
+          
+          server_factory.file_system = @file_system_factory
         
           server_factory.add_listener "default", listener_factory.create_listener
 

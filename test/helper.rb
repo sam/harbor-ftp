@@ -16,6 +16,12 @@ DB = Sequel.connect("jdbc:h2:mem:")
 
 Sequel.extension :inflector
 
+# Tell Sequel not to cache our anonymous models
+# so we can reuse and redefine tables in tests.
+# ie: :users is re-used with a different schema
+# multiple times.
+Sequel::Model.cache_anonymous_models = false
+
 require "thread"
 require "net/ftp"
 require "uri"
