@@ -1,12 +1,4 @@
-# package org.apache.ftpserver.filesystem.nativefs;
-
-# import java.io.File;
-
-# import org.apache.ftpserver.filesystem.nativefs.impl.NativeFileSystemView;
-# import org.apache.ftpserver.ftplet.FileSystemFactory;
-# import org.apache.ftpserver.ftplet.FileSystemView;
-# import org.apache.ftpserver.ftplet.FtpException;
-# import org.apache.ftpserver.ftplet.User;
+require_relative "native_file_system_view"
 
 class Harbor
   module FTP
@@ -37,8 +29,9 @@ class Harbor
         def create_file_system_view(user)
           SEMAPHORE.synchronize do
             if create_home?
+              # TODO: None of this branch is stressed in the tests.
               home_directory = user.home_directory
-              if FileUtils::dir?(home_directory)
+              if File::directory?(home_directory)
                 LOG.warn { "Not a directory :: #{home_directory}" }
                 raise FtpException.new("Not a directory :: #{home_directory}")
               end
@@ -49,7 +42,7 @@ class Harbor
               end
             end
             
-            NativeFileSystemView.new(user, case_insensitive?)
+            FileSystems::NativeFileSystemView.new(user, case_insensitive?)
           end
         end
         
