@@ -6,7 +6,6 @@ class Harbor
       class NativeFileSystemFactory
         
         include_package "org.apache.ftpserver.ftplet"
-        include_package "org.apache.ftpserver.filesystem.nativefs.impl"
         
         include FileSystemFactory
         

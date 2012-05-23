@@ -20,9 +20,7 @@ class Harbor
         end
       
         def exists?(username)
-          @user_model.select(1).where(
-            @user_model.filter(@key => username).exists
-          ).single_value == 1
+          @user_model.where(@key => username).empty?
         end
       
       end # class SequelUserManager

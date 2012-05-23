@@ -1,36 +1,11 @@
-# package org.apache.ftpserver.filesystem.nativefs.impl;
-#
-# import java.io.File;
-# import java.util.StringTokenizer;
-# 
-# import org.apache.ftpserver.filesystem.nativefs.NativeFileSystemFactory;
-# import org.apache.ftpserver.ftplet.FileSystemView;
-# import org.apache.ftpserver.ftplet.FtpException;
-# import org.apache.ftpserver.ftplet.FtpFile;
-# import org.apache.ftpserver.ftplet.User;
-# import org.slf4j.Logger;
-# import org.slf4j.LoggerFactory;
+require_relative "native_ftp_file"
 
 class Harbor
   module FTP
     module FileSystems
       class NativeFileSystemView
-        
-        def self.package_local_constructor klass,*values
-          constructors = klass.java_class.declared_constructors
-          constructors.each do |c|
-            c.accessible = true
-            begin
-              return c.new_instance(*values).to_java
-            rescue TypeError 
-              false
-            end
-          end
-          raise TypeError,"found no matching constructor for " + klass.to_s + "(" + value.class + ")"
-        end
           
         include_package "org.apache.ftpserver.ftplet"
-        include_package "org.apache.ftpserver.filesystem.nativefs.impl"
         
         include FileSystemView
         
@@ -53,11 +28,11 @@ class Harbor
         end
         
         def home_directory
-          self.class.package_local_constructor(NativeFtpFile, "/", java.io.File.new(@root_dir.realpath.to_s), @user)
+          NativeFtpFile.new "/", java.io.File.new(@root_dir.realpath.to_s), @user
         end
         
         def working_directory
-          self.class.package_local_constructor(NativeFtpFile, "/", java.io.File.new(@current_dir.realpath.to_s), @user)
+          NativeFtpFile.new "/", java.io.File.new(@current_dir.realpath.to_s), @user
         end
         
         def get_file(path)
@@ -67,7 +42,7 @@ class Harbor
           
           file = java.io.File.new(path)
           
-          self.class.package_local_constructor(NativeFtpFile, path, file, @user)
+          NativeFtpFile.new path, file, @user
         end
         
         def change_working_directory(dir)
