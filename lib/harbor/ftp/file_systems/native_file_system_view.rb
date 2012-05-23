@@ -16,7 +16,7 @@ class Harbor
           @user = user
           @root_dir = @current_dir = Pathname(@user.home_directory.ensure_ends_with("/"))
           
-          LOG.debug { "Native filesystem view created for user \"#{@user.name}\" with root \"#{@root_dir}\"" }
+          LOG.debug { "View created for user \"#{@user.name}\" with root \"#{@root_dir}\"" }
         end
         
         def case_insensitive?
@@ -65,7 +65,7 @@ class Harbor
         
         private
         
-        LOG = RJack::SLF4J.logger
+        LOG = RJack::SLF4J[self]
         
         def get_physical_name(path)
           path = if path.start_with? "/"

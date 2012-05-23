@@ -13,6 +13,15 @@ class Harbor
     def self.services
       @services ||= Container.new
     end
+    
+    # Simple helper method to silence warnings (mostly in tests).
+    # Declared here to guarantee we avoid conflicting with other libraries.
+    def self.suppress_warnings
+      original_verbosity, $VERBOSE = $VERBOSE, nil
+      result = yield
+      $VERBOSE = original_verbosity
+      return result
+    end
   end
 end
 

@@ -159,7 +159,7 @@ class Harbor
         end
           
         private
-        LOG = RJack::SLF4J.logger
+        LOG = RJack::SLF4J[self]
         
         class FileOutputStream < java.io.FileOutputStream
           def initialize(file, offset)

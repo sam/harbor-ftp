@@ -14,6 +14,9 @@ class Harbor
         end
         
         def create_home=(value)
+          unless value == true || value == false
+            raise ArgumentError.new("create_home value must be +true+ or +false+") 
+          end
           @create_home = value
         end
         
@@ -28,16 +31,17 @@ class Harbor
         def create_file_system_view(user)
           SEMAPHORE.synchronize do
             if create_home?
-              # TODO: None of this branch is stressed in the tests.
               home_directory = user.home_directory
-              if File::directory?(home_directory)
-                LOG.warn { "Not a directory :: #{home_directory}" }
-                raise FtpException.new("Not a directory :: #{home_directory}")
-              end
-              
-              if !File::exists?(home_directory) && !FileUtils::mkdir_p(home_directory)
-                LOG.warn { "Cannot create user home :: #{home_directory}" }
-                FtpException.new("Cannot create user home :: #{home_directory}")
+              if File::exists?(home_directory)
+                unless File::directory?(home_directory)
+                  LOG.warn { "Not a directory :: #{home_directory}" }
+                  raise FtpException.new("Not a directory :: #{home_directory}")
+                end
+              else
+                unless FileUtils::mkdir_p(home_directory)
+                  LOG.warn { "Cannot create user home :: #{home_directory}" }
+                  FtpException.new("Cannot create user home :: #{home_directory}")
+                end
               end
             end
             
@@ -47,7 +51,7 @@ class Harbor
         
         private
         SEMAPHORE = Mutex.new
-        LOG = RJack::SLF4J.logger
+        LOG = RJack::SLF4J[self]
         
       end # class NativeFileSystemFactory
     end # module FileSystems

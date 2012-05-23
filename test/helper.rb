@@ -12,6 +12,11 @@ $:.unshift (Pathname(__FILE__).dirname.parent + "lib").to_s
 require "harbor/ftp"
 
 require "sequel"
+
+# jdbc/h2 declares an unscoped VERSION constant,
+# which will throw an annoying warning.
+Harbor::FTP::suppress_warnings { require "jdbc/h2" }
+
 DB = Sequel.connect("jdbc:h2:mem:")
 
 Sequel.extension :inflector
