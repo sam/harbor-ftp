@@ -58,7 +58,7 @@ describe Harbor::FTP::FileSystems::NativeFileSystemFactory do
       @factory.create_home = true
       
       FileUtils::touch test_file
-      @factory.create_file_system_view(@user_adapter).must_be_kind_of org.apache.ftpserver.ftplet.FileSystemView
+      @factory.create_file_system_view @user_adapter
       File::exists?(test_file).must_equal true
     end
     
@@ -68,7 +68,7 @@ describe Harbor::FTP::FileSystems::NativeFileSystemFactory do
       @user_adapter = Harbor::FTP::UserAdapter.new(@user)
       
       File::directory?(@user.ftp_home_directory).must_equal false
-      @factory.create_file_system_view(@user_adapter).must_be_kind_of org.apache.ftpserver.ftplet.FileSystemView
+      @factory.create_file_system_view @user_adapter
       File::directory?(@user.ftp_home_directory).must_equal true
     end
   end
