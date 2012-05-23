@@ -6,7 +6,7 @@ describe Harbor::FTP::FileSystems::NativeFileSystemFactory do
   
   before do
     @factory = Harbor::FTP::FileSystems::NativeFileSystemFactory.new
-    @home_directory = Pathname(__FILE__).dirname.parent.parent + "tmp" + "native_file_system_factory_spec"
+    @home_directory = Pathname(__FILE__).dirname.parent.parent + "tmp" + "native_file_system_factory"
     FileUtils::mkdir_p @home_directory
   end
   

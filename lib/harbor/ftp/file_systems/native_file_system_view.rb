@@ -4,7 +4,7 @@ class Harbor
   module FTP
     module FileSystems
       class NativeFileSystemView
-          
+
         include_package "org.apache.ftpserver.ftplet"
         
         include FileSystemView
@@ -36,9 +36,8 @@ class Harbor
         end
         
         def get_file(path)
-          LOG.debug { "get_file(\"#{path}\") :: @root_dir[#{@root_dir}]" }
+          LOG.debug { "get_file(\"#{path}\")" }
           path = get_physical_name(path)
-          LOG.debug { "PATH: #{path}" }
           
           file = java.io.File.new(path)
           
@@ -59,28 +58,41 @@ class Harbor
           return true
         end
         
+        # This method isn't used in the original either,
+        # but the interface requires us to impelement it.
         def dispose
           nil
         end
         
-        private
-        
-        LOG = RJack::SLF4J[self]
-        
         def get_physical_name(path)
+          # @root_dir and @current_dir are Pathname objects.
+          # This conditional determines if you've asked for
+          # an absolute-path (from your root), or a relative-path
+          # (within your current working directory).
           path = if path.start_with? "/"
             (@root_dir + path).realpath.to_s
           else
-            LOG.debug { "get_physical_name: relative_path: @root_dir: #{@root_dir} @current_dir: #{@current_dir} @path: #{path}" }
             (@current_dir + path).realpath.to_s
           end
           
+          # Ensure that we "chroot" all requests to the @root_dir.
+          # ie: If you pass: "/../" to this method, we need to ensure
+          # that we don't allow you to actually get that path since
+          #   (@root_dir + path).realpath
+          # ..would calculate out your traversal and return you a path
+          # outside of what you should be allowed to see.
           if path.start_with? @root_dir.realpath.to_s
             path
           else
+            # If you've tried to do something evil, we'll just kick
+            # you back to your home_directory.
             @root_dir.realpath.to_s
           end
         end
+        
+        private
+
+        LOG = RJack::SLF4J[self]
         
       end # class NativeFileSystemView
     end # module FileSystems
