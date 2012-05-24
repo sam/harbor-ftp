@@ -32,14 +32,14 @@ class Harbor
         def create_file_system_view(user)
           SEMAPHORE.synchronize do
             if create_home?
-              home_directory = user.home_directory
-              if File::exists?(home_directory)
-                unless File::directory?(home_directory)
+              home_directory = Pathname(user.home_directory)
+              if home_directory.exist?
+                unless home_directory.directory?
                   LOG.warn { "Not a directory :: #{home_directory}" }
                   raise FtpException.new("Not a directory :: #{home_directory}")
                 end
               else
-                unless FileUtils::mkdir_p(home_directory)
+                unless home_directory.mkpath
                   LOG.warn { "Cannot create user home :: #{home_directory}" }
                   FtpException.new("Cannot create user home :: #{home_directory}")
                 end

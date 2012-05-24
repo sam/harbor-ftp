@@ -8,10 +8,6 @@ class Harbor
           def initialize(root)
             @root = @current = Pathname(root).realpath
           end
-  
-          def root
-            @root
-          end
           
           def to_s
             @root.to_s
@@ -23,7 +19,7 @@ class Harbor
           
           def chdir(path)
             path = request(path)
-            return false unless path.directory?
+            return false unless path.directory? && path != @root
 
             @current = path
             true
