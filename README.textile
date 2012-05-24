@@ -66,6 +66,12 @@ server.stop
 
 p. And that's it. You can refer to the @examples@ folder for other examples, and there's always the @test@ folder for the specs if you have more questions!
 
+h2. Testing
+
+Please keep in mind while reviewing the @examples@ or the _Design_ section below that the tests can all be executed on an individual basis. ie: @jruby test/user_adapter_spec.rb@.
+
+While we can't run a Coverage tool under JRuby, we do aim to test most of the library, and provide solid documentation. If you have any questions or find a particular area lacking in documentation please file an issue.
+
 h2. Design
 
 Here we'll briefly cover the implementation details of the project in case you want to walk through it or contribute.
