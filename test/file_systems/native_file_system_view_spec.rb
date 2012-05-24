@@ -39,13 +39,7 @@ describe Harbor::FTP::FileSystems::NativeFileSystemView do
       @view.home_directory.get_absolute_path.must_equal "/"
     end
   end
-  
-  describe "get_physical_name" do
-    it "must return a chrooted path" do
-      @view.get_physical_name("/../").must_equal @home_directory.realpath.to_s
-    end
-  end
-  
+    
   # 
   # class Harbor
   #   module FTP

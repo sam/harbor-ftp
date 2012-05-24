@@ -2,6 +2,8 @@ class Harbor
   module FTP
     module FileSystems
       class NativeFtpFile
+        include Loggable
+        
         include_package "org.apache.ftpserver.ftplet"
         include_package "org.apache.ftpserver.usermanager.impl"
         
@@ -159,7 +161,6 @@ class Harbor
         end
           
         private
-        LOG = RJack::SLF4J[self]
         
         class FileOutputStream < java.io.FileOutputStream
           def initialize(file, offset)

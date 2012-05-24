@@ -8,6 +8,8 @@ RJack::Logback.config_console( :level => :debug )
 
 Dir[Pathname(__FILE__).dirname.parent.parent + "jars" + "*.jar"].each { |jar| require jar }
 
+require "harbor/ftp/loggable"
+
 class Harbor
   module FTP
     def self.services
@@ -22,6 +24,13 @@ class Harbor
       $VERBOSE = original_verbosity
       return result
     end
+  end
+end
+
+class Module
+  def declare_private_constant(name, value)
+    const_set name, value
+    private_constant name
   end
 end
 

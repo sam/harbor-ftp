@@ -4,9 +4,9 @@ class Harbor
   module FTP
     module FileSystems
       class NativeFileSystemFactory
+        include Loggable
         
         include_package "org.apache.ftpserver.ftplet"
-        
         include FileSystemFactory
         
         def initialize
@@ -28,6 +28,7 @@ class Harbor
           false
         end
         
+        declare_private_constant :SEMAPHORE, Mutex.new
         def create_file_system_view(user)
           SEMAPHORE.synchronize do
             if create_home?
@@ -48,10 +49,6 @@ class Harbor
             FileSystems::NativeFileSystemView.new(user, case_insensitive?)
           end
         end
-        
-        private
-        SEMAPHORE = Mutex.new
-        LOG = RJack::SLF4J[self]
         
       end # class NativeFileSystemFactory
     end # module FileSystems
