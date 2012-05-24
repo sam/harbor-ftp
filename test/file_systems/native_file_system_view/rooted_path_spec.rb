@@ -38,8 +38,14 @@ describe Harbor::FTP::FileSystems::NativeFileSystemView::RootedPath do
   end
   
   describe "to_s" do
-    it "must return the String value of the assigned root" do
+    it "must return the String value of the current working directory" do
       @rooted_path.to_s.must_equal @root.to_s
+    end
+  end
+  
+  describe "home" do
+    it "must return the root Pathname" do
+      @rooted_path.home.must_equal @root
     end
   end
   

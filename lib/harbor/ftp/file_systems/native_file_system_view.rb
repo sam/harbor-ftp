@@ -40,21 +40,18 @@ class Harbor
         def get_file(path)
           LOG.debug { "get_file(\"#{path}\")" }
 
-          path = @root.request(path).to_s
-          file = java.io.File.new(path)
+          path = @root.request(path)
+          file = java.io.File.new(path.to_s)
           
-          NativeFtpFile.new path, file, @user
+          NativeFtpFile.new path.to_s, file, @user
         end
         
         def change_working_directory(dir)
           LOG.debug { "change_working_directory(\"#{dir}\")" }
 
-          if @root.chdir(dir)
-            true
-          else
-            LOG.error { "dir does not exist! #{dir}" }
-            false
-          end
+          result = @root.chdir(dir)
+          LOG.error { "dir does not exist! #{dir}" } unless result
+          result
         end
         
         # This method isn't used in the original either,

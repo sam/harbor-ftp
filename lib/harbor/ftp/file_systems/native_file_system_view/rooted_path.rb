@@ -6,11 +6,15 @@ class Harbor
           include Loggable
           
           def initialize(root)
-            @root = @current = Pathname(root).realpath
+            @home = @current = Pathname(root).realpath
           end
           
           def to_s
-            @root.to_s
+            @current.to_s
+          end
+          
+          def home
+            @home
           end
           
           def cwd
@@ -19,7 +23,7 @@ class Harbor
           
           def chdir(path)
             path = request(path)
-            return false unless path.directory? && path != @root
+            return false unless path.directory? && path != @home
 
             @current = path
             true
@@ -31,7 +35,7 @@ class Harbor
             # an absolute-path (from your root), or a relative-path
             # (within your current working directory).
             path = if path.start_with? "/"
-              @root + path[1..-1]
+              @home + path[1..-1]
             else
               (@current + path)
             end.realpath
@@ -47,10 +51,10 @@ class Harbor
           # ..would calculate out your traversal and return you a path
           # outside of what you should be allowed to see.
           def ensure_rooted(pathname)
-            if pathname.to_s.start_with? @root.to_s
+            if pathname.to_s.start_with? @home.to_s
               pathname
             else
-              @root
+              @home
             end
           end
         end # class RootedPath

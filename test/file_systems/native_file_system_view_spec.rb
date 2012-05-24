@@ -39,71 +39,49 @@ describe Harbor::FTP::FileSystems::NativeFileSystemView do
       @view.home_directory.get_absolute_path.must_equal "/"
     end
   end
-    
-  # 
-  # class Harbor
-  #   module FTP
-  #     module FileSystems
-  #       class NativeFileSystemView
-  # 
-  #         def home_directory
-  #           NativeFtpFile.new "/", java.io.File.new(@root_dir.realpath.to_s), @user
-  #         end
-  # 
-  #         def working_directory
-  #           NativeFtpFile.new "/", java.io.File.new(@current_dir.realpath.to_s), @user
-  #         end
-  # 
-  #         def get_file(path)
-  #           LOG.debug { "get_file(\"#{path}\") :: @root_dir[#{@root_dir}]" }
-  #           path = get_physical_name(path)
-  #           LOG.debug { "PATH: #{path}" }
-  # 
-  #           file = java.io.File.new(path)
-  # 
-  #           NativeFtpFile.new path, file, @user
-  #         end
-  # 
-  #         def change_working_directory(dir)
-  #           LOG.debug { "change_working_directory(\"#{dir}\")" }
-  #           dir = get_physical_name(dir)   
-  # 
-  #           if Pathname(dir).directory?
-  #             @current_dir = Pathname(dir)
-  #           else
-  #             LOG.error { "dir does not exist! #{dir}" }
-  #             return false
-  #           end
-  # 
-  #           return true
-  #         end
-  # 
-  #         def dispose
-  #           nil
-  #         end
-  # 
-  #         private
-  # 
-  #         LOG = RJack::SLF4J[self]
-  # 
-  #         def get_physical_name(path)
-  #           path = if path.start_with? "/"
-  #             (@root_dir + path).realpath.to_s
-  #           else
-  #             LOG.debug { "get_physical_name: relative_path: @root_dir: #{@root_dir} @current_dir: #{@current_dir} @path: #{path}" }
-  #             (@current_dir + path).realpath.to_s
-  #           end
-  # 
-  #           if path.start_with? @root_dir.realpath.to_s
-  #             path
-  #           else
-  #             @root_dir.realpath.to_s
-  #           end
-  #         end
-  # 
-  #       end # class NativeFileSystemView
-  #     end # module FileSystems
-  #   end # module FTP
-  # end # class Harbor
   
+  describe "working_directory" do
+    it "must default to root" do
+      @view.working_directory.get_absolute_path.must_equal "/"
+    end    
+  end
+  
+  it "must implement a dispose method" do
+    @view.must_respond_to :dispose
+  end
+  
+  describe "change_working_directory" do
+    it "must chroot all requests" do
+      @view.change_working_directory("/../").must_equal false
+    end
+    
+    it "must allow you to request a relative path" do
+      path = @home_directory + "a" + "b"
+      path.mkpath
+      
+      @view.change_working_directory("a").must_equal true
+      @view.change_working_directory("b").must_equal true
+    end
+    
+    it "must allow you to request an absolute path" do
+      path = @home_directory + "a" + "b"
+      path.mkpath
+      
+      @view.change_working_directory("/a").must_equal true
+      @view.change_working_directory("/a/b").must_equal true
+    end
+  end
+  
+  describe "get_file" do
+    it "must return a NativeFtpFile" do
+      path = @home_directory + "a"
+      path.mkpath
+    
+      file = @view.get_file("a")
+      file.must_be_kind_of Harbor::FTP::FileSystems::NativeFtpFile
+      # TODO: What does "absolute_path" mean in this context?
+      # Need to clarify this when specifying NativeFtpFile.
+      file.get_absolute_path.must_equal path.realpath.to_s
+    end
+  end
 end
