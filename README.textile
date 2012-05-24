@@ -18,12 +18,13 @@ To accomplish this we strongly encourage you use "Sequel":http://sequel.rubyforg
 
 h2. Requirements
 
-* JRuby 1.6.7 or above (the Apache FtpServer is a Java library, so this is a hard requirement)
-* Ruby 1.9 Syntax Mode (this project is not compatible with Ruby 1.8 syntax)
+* JRuby 1.7.0.preview1 or above:
+** The Apache FtpServer is a Java library, so JRuby is a hard requirement
+** Ruby 1.9 Syntax is used, including methods introduced in 1.9.3 so this project is not compatible with Ruby 1.8 syntax, or older 1.9 Rubies (MRI < 1.9.3 or JRuby < 1.7) that did not include @Module#private_constant@. That includes JRuby 1.6.7's @--1.9@ mode, which is based on a pre Ruby 1.9.3 compatibility level.
 
 h3. Tested With
 
-* JRuby 1.7.dev (installed with @rvm install jruby-head@)
+* JRuby 1.7.0.preview1 (installed with @rvm install jruby-1.7.0.preview1@)
 * "H2":http://h2database.com/html/main.html and "PostgreSQL 9.1.1":http://www.postgresql.org/ was used to develop the Sequel UserManager
 
 h2. Setup
