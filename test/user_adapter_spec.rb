@@ -1,7 +1,6 @@
 #!/usr/bin/env jruby
 
 require_relative "helper"
-require "ostruct"
 
 describe Harbor::FTP::UserAdapter do
   

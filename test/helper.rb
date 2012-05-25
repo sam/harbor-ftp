@@ -32,6 +32,15 @@ require "net/ftp"
 require "uri"
 require "cgi"
 require "fileutils"
+require "ostruct"
+
+class Pathname
+  def touch(path)
+    file = self + path
+    file.open("w+") { nil }
+    file
+  end
+end
 
 class Helper
   

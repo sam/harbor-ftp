@@ -27,10 +27,11 @@ class Harbor
           @path.to_s
         end
         
-        def get_name
+        def basename
           # If it's a directory, should we return ./ instead of the name?
           @path.basename.to_s
         end
+        alias_method :get_name, :basename
         
         def hidden?
           @file.hidden?
