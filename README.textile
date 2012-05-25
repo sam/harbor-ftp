@@ -59,7 +59,7 @@ server = Harbor::FTP::Server.new
 server.port = 21
 server.user_manager = user_manager
 
-ftp_thread = Thread.new { server.start }
+Thread.new { server.start }
 
 run MyAwesomeWebApp
 
