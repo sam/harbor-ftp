@@ -1,3 +1,6 @@
+require_relative "native_ftp_file/file_output_stream"
+require_relative "native_ftp_file/file_input_stream"
+
 class Harbor
   module FTP
     module FileSystems
@@ -15,18 +18,18 @@ class Harbor
           ArgumentError.new("path can not be empty") if path.empty?
           ArgumentError.new("path must be absolute") unless path.start_with? "/"
           
-          @path = path # Originally: fileName
+          @path = Pathname(path) # Originally: fileName
           @file = file
           @user = user
         end
 
         def get_absolute_path
-          Pathname(@path).realpath.to_s
+          @path.to_s
         end
         
         def get_name
           # If it's a directory, should we return ./ instead of the name?
-          Pathname(@path).basename.to_s
+          @path.basename.to_s
         end
         
         def hidden?
@@ -135,7 +138,7 @@ class Harbor
         def removable?
           return false if @path == "/"
           return false unless @user.authorize(WriteRequest.new(get_absolute_path))
-          return NativeFtpFile.new(Pathname(@path).parent.to_s, file, @user).writable?
+          return NativeFtpFile.new(@path.parent.to_s, @file, @user).writable?
         end
         
         def list_files
@@ -144,9 +147,8 @@ class Harbor
           files = @file.list_files
           return nil unless files
           
-          path = Pathname(get_absolute_path)
           files.sort.map do |file|
-            NativeFtpFile.new((path + file.name).to_s, file, @user)
+            NativeFtpFile.new((@path + file.name).to_s, file, @user)
           end
         end
       
@@ -159,35 +161,7 @@ class Harbor
           raise java.io.IOException.new("No read permission : #{@file.name}") unless readable?          
           FileInputStream.new(@file, offset)
         end
-          
-        private
         
-        class FileOutputStream < java.io.FileOutputStream
-          def initialize(file, offset)
-            @file = java.io.RandomAccessFile.new(file, "rw")
-            @file.length = offset
-            @file.seek offset
-            super(@file.getFD)
-          end
-          
-          def close
-            super
-            @file.close
-          end
-        end
-        
-        class FileInputStream < java.io.FileInputStream
-          def initialize(file, offset)
-            @file = java.io.RandomAccessFile.new(file, "r")
-            @file.seek offset
-            super(@file.getFD)
-          end
-          
-          def close
-            super
-            @file.close
-          end
-        end
       end # class NativeFtpFile
     end # module FileSystems
   end # module FTP

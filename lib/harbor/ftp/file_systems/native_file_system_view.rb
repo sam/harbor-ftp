@@ -43,7 +43,7 @@ class Harbor
           path = @root.request(path)
           file = java.io.File.new(path.to_s)
           
-          NativeFtpFile.new path.to_s, file, @user
+          NativeFtpFile.new "/#{path.relative_path_from(@root.home)}", file, @user
         end
         
         def change_working_directory(dir)

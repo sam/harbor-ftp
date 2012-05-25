@@ -79,9 +79,7 @@ describe Harbor::FTP::FileSystems::NativeFileSystemView do
     
       file = @view.get_file("a")
       file.must_be_kind_of Harbor::FTP::FileSystems::NativeFtpFile
-      # TODO: What does "absolute_path" mean in this context?
-      # Need to clarify this when specifying NativeFtpFile.
-      file.get_absolute_path.must_equal path.realpath.to_s
+      file.get_absolute_path.must_equal "/a"
     end
   end
 end
