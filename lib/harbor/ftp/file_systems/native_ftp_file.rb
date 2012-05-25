@@ -31,7 +31,7 @@ class Harbor
           # If it's a directory, should we return ./ instead of the name?
           @path.basename.to_s
         end
-        alias_method :get_name, :basename
+        alias_method :getName, :basename
         
         def hidden?
           @file.hidden?
@@ -87,21 +87,25 @@ class Harbor
           @file.directory? ? 3 : 1
         end
         
-        def get_last_modified
-          @file.last_modified
-        end
-        
-        def get_size
+        def size
           @file.length
         end
+        alias_method :getSize, :size
         
-        def get_physical_file
+        def file
           @file
         end
+        alias_method :getPhysicalFile, :file
         
-        def set_last_modified(time)
+        def last_modified
+          @file.last_modified
+        end
+        alias_method :getLastModified, :last_modified
+        
+        def last_modified=(time)
           @file.set_last_modified(time)
         end
+        alias_method :setLastModified, :last_modified=
         
         def delete
           return @file.delete if removable?
@@ -113,27 +117,30 @@ class Harbor
           false
         end
         
-        def hash_code
-          @file.get_canonical_path.hash_code
+        def hash
+          @file.canonical_path.hash
         rescue java.io.IOException
           0
         end
+        alias_method :getHashCode, :hash
         
-        def equals(other)
+        def ==(other)
           if other.is_a?(NativeFtpFile)
-            return @file.get_canonical_path == other.file.get_canonical_path
+            return @file.canonical_path == other.file.canonical_path
           end
           false
         rescue java.io.IOException => e
           raise java.lang.RuntimeException.new("Failed to get the canonical path", e)
         end
+        alias_method :equals, :==
         
         def move(destination)
           if readable? && destination.writable?
             return false if destination.exists?
             @file.rename_to(destination.file)
+          else
+            false
           end
-          false
         end
         
         def removable?
