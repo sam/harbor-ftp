@@ -3,7 +3,37 @@
 require_relative "../helper"
 
 describe Harbor::FTP::FileSystems::NativeFtpFile do
+
+  NativeFtpFile = Harbor::FTP::FileSystems::NativeFtpFile
   
+  before do
+    @home = (Pathname(__FILE__).dirname.parent.parent + "tmp" + "native_ftp_file")
+    @home.mkpath
+    @home = @home.realpath
+    
+    @bob = OpenStruct.new ftp_username: "bob", ftp_home_directory: @home.to_s, ftp_max_idle_time: 60
+    @user = Harbor::FTP::UserAdapter.new(@bob)
+  end
+  
+  after do
+    @home.rmtree
+  end
+  
+  
+  describe "removable?" do
+    it "must not allow home-directory to be removed" do      
+      NativeFtpFile.new("/", java.io.File.new(@home.to_s), @user).removable?.must_equal false
+    end
+    
+    it "must allow a sub-path to be removed if the parent is writable" do
+      NativeFtpFile.new("/", java.io.File.new(@home.to_s), @user).writable?.must_equal true
+      
+      path = (@home + "a")
+      path.mkpath
+      
+      NativeFtpFile.new("/a", java.io.File.new(path.to_s), @user).removable?.must_equal true
+    end
+  end
 end
 
 # class Harbor
@@ -138,12 +168,6 @@ end
 #             @file.rename_to(destination.file)
 #           end
 #           false
-#         end
-#         
-#         def removable?
-#           return false if @path == "/"
-#           return false unless @user.authorize(WriteRequest.new(get_absolute_path))
-#           return NativeFtpFile.new(Pathname(@path).parent.to_s, file, @user).writable?
 #         end
 #         
 #         def list_files

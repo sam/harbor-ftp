@@ -136,8 +136,8 @@ class Harbor
         end
         
         def removable?
-          return false if @path == "/"
-          return false unless @user.authorize(WriteRequest.new(get_absolute_path))
+          return false if @path.to_s == "/"
+          return false unless @user.authorize(WriteRequest.new(@path.to_s))
           return NativeFtpFile.new(@path.parent.to_s, @file, @user).writable?
         end
         
