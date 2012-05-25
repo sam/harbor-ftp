@@ -81,7 +81,7 @@ The project's main entry point is @lib/harbor/ftp.rb@. This file requires all th
 
 In the root directory you'll see the standard stuff such as @Rakefile@, @Gemfile@, @harbor-ftp.gemspec@, a @bin/harbor-ftp@ to start the server stand-alone, and the @test@ folder.
 
-For testing we're using Ruby 1.9's @MiniTest::Spec@. For database integration tests we're using @Sequel@, and @Spawn@ (a trivially simple fixture-replacement library). The data factories are at @test/data@.
+For testing we're using Ruby 1.9's @MiniTest::Spec@. For database integration tests we're using @Sequel@.
 
 The main library is a wrapper around Apache's FtpServer library. It doesn't have the prettiest interface, but this project aims to solve that through the use of the "Adapter Pattern":http://c2.com/cgi/wiki?AdapterPattern.
 
