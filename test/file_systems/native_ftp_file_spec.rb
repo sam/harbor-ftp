@@ -3,8 +3,6 @@
 require_relative "../helper"
 
 describe Harbor::FTP::FileSystems::NativeFtpFile do
-
-  NativeFtpFile = Harbor::FTP::FileSystems::NativeFtpFile
   
   before do
     (@home = Pathname(__FILE__).dirname.parent.parent + "tmp" + "native_ftp_file").mkpath
@@ -22,26 +20,26 @@ describe Harbor::FTP::FileSystems::NativeFtpFile do
   
   describe "removable?" do
     it "must not allow home-directory to be removed" do      
-      NativeFtpFile.new("/", java.io.File.new(@home.to_s), @user).removable?.must_equal false
+      Harbor::FTP::FileSystems::NativeFtpFile.new("/", java.io.File.new(@home.to_s), @user).removable?.must_equal false
     end
     
     it "must allow a sub-path to be removed if the parent is writable" do
-      NativeFtpFile.new("/", java.io.File.new(@home.to_s), @user).writable?.must_equal true      
-      NativeFtpFile.new("/a", java.io.File.new(@path.to_s), @user).removable?.must_equal true
+      Harbor::FTP::FileSystems::NativeFtpFile.new("/", java.io.File.new(@home.to_s), @user).writable?.must_equal true      
+      Harbor::FTP::FileSystems::NativeFtpFile.new("/a", java.io.File.new(@path.to_s), @user).removable?.must_equal true
     end
   end
   
   describe "get_absolute_path" do
     it "must be relative to the home-directory" do
-      NativeFtpFile.new("/a", java.io.File.new(@path.to_s), @user).get_absolute_path.must_equal "/a"
+      Harbor::FTP::FileSystems::NativeFtpFile.new("/a", java.io.File.new(@path.to_s), @user).get_absolute_path.must_equal "/a"
     end
   end
   
   describe "basename" do
     it "should return just the file or directory name" do
-      NativeFtpFile.new("/a", java.io.File.new(@path.to_s), @user).basename.must_equal "a"
+      Harbor::FTP::FileSystems::NativeFtpFile.new("/a", java.io.File.new(@path.to_s), @user).basename.must_equal "a"
       b_txt = @path.touch "b.txt"
-      NativeFtpFile.new("/a/b.txt", java.io.File.new(b_txt.to_s), @user).basename.must_equal "b.txt"
+      Harbor::FTP::FileSystems::NativeFtpFile.new("/a/b.txt", java.io.File.new(b_txt.to_s), @user).basename.must_equal "b.txt"
     end
   end
   
@@ -52,7 +50,7 @@ describe Harbor::FTP::FileSystems::NativeFtpFile do
       (c = @home + "c").mkpath
       
       paths = [ a, b, c ].map { |path| "/#{path.relative_path_from(@home).to_s}" }
-      home = NativeFtpFile.new("/", java.io.File.new(@home.to_s), @user)
+      home = Harbor::FTP::FileSystems::NativeFtpFile.new("/", java.io.File.new(@home.to_s), @user)
       files = home.list_files
       files.size.must_equal 3
       files.map do |file|
@@ -63,13 +61,13 @@ describe Harbor::FTP::FileSystems::NativeFtpFile do
   
   describe "writable?" do
     it "should default to true using the default UserAdapter" do
-      NativeFtpFile.new("/", java.io.File.new(@home.to_s), @user).writable?.must_equal true
+      Harbor::FTP::FileSystems::NativeFtpFile.new("/", java.io.File.new(@home.to_s), @user).writable?.must_equal true
     end
   end
   
   describe "interface defaults" do
     before do
-      @file = NativeFtpFile.new("/", java.io.File.new(@home.to_s), @user)
+      @file = Harbor::FTP::FileSystems::NativeFtpFile.new("/", java.io.File.new(@home.to_s), @user)
     end
     
     describe "get_owner_name" do
@@ -87,7 +85,7 @@ describe Harbor::FTP::FileSystems::NativeFtpFile do
     describe "get_link_count" do
       it "must return 1 for a file" do
         txt = @home.touch "a.txt"
-        NativeFtpFile.new("/a.txt", java.io.File.new(txt.to_s), @user).get_link_count.must_equal 1
+        Harbor::FTP::FileSystems::NativeFtpFile.new("/a.txt", java.io.File.new(txt.to_s), @user).get_link_count.must_equal 1
       end
       
       it "must return 3 for a directory" do
@@ -98,7 +96,7 @@ describe Harbor::FTP::FileSystems::NativeFtpFile do
     describe "size" do
       it "must return 0 for an empty file" do
         txt = @home.touch "a.txt"
-        NativeFtpFile.new("/a.txt", java.io.File.new(txt.to_s), @user).size.must_equal 0
+        Harbor::FTP::FileSystems::NativeFtpFile.new("/a.txt", java.io.File.new(txt.to_s), @user).size.must_equal 0
       end
       
       it "must return the correct number of bytes for a non-empty file" do
@@ -106,14 +104,14 @@ describe Harbor::FTP::FileSystems::NativeFtpFile do
         lorem = Faker::Lorem.paragraphs.join("\n")
         txt.open('w') { |io| io << lorem }
         
-        NativeFtpFile.new("/a.txt", java.io.File.new(txt.to_s), @user).size.must_equal lorem.bytesize
+        Harbor::FTP::FileSystems::NativeFtpFile.new("/a.txt", java.io.File.new(txt.to_s), @user).size.must_equal lorem.bytesize
       end
     end
     
     describe "get_last_modified" do
       it "must return the correct datetime" do
         txt = @home.touch "a.txt"
-        file = NativeFtpFile.new("/a.txt", java.io.File.new(txt.to_s), @user)
+        file = Harbor::FTP::FileSystems::NativeFtpFile.new("/a.txt", java.io.File.new(txt.to_s), @user)
         # java.io.File.lastModified() returns ms since epoch instead of Ruby's s.
         Time.at(file.last_modified/1000).must_equal txt.mtime
       end
@@ -122,7 +120,7 @@ describe Harbor::FTP::FileSystems::NativeFtpFile do
     describe "delete" do
       it "must remove file" do
         txt = @home.touch "a.txt"
-        file = NativeFtpFile.new("/a.txt", java.io.File.new(txt.to_s), @user)
+        file = Harbor::FTP::FileSystems::NativeFtpFile.new("/a.txt", java.io.File.new(txt.to_s), @user)
         file.delete.must_equal true
         txt.exist?.must_equal false
       end
@@ -131,7 +129,7 @@ describe Harbor::FTP::FileSystems::NativeFtpFile do
     describe "mkdir" do
       it "must create directory" do
         zed = @home + "zed"
-        file = NativeFtpFile.new("/zed", java.io.File.new(zed.to_s), @user)
+        file = Harbor::FTP::FileSystems::NativeFtpFile.new("/zed", java.io.File.new(zed.to_s), @user)
         
         zed.exist?.must_equal false
         file.mkdir.must_equal true
@@ -141,8 +139,8 @@ describe Harbor::FTP::FileSystems::NativeFtpFile do
     
     describe "equals" do
       it "must be true if both share the same canonical path" do
-        file1 = NativeFtpFile.new("/", java.io.File.new(@home.to_s), @user)
-        file2 = NativeFtpFile.new("/", java.io.File.new(@home.to_s), @user)
+        file1 = Harbor::FTP::FileSystems::NativeFtpFile.new("/", java.io.File.new(@home.to_s), @user)
+        file2 = Harbor::FTP::FileSystems::NativeFtpFile.new("/", java.io.File.new(@home.to_s), @user)
         file1.must_equal file2
       end
     end
@@ -150,7 +148,7 @@ describe Harbor::FTP::FileSystems::NativeFtpFile do
     describe "file" do
       it "must return a java.io.File" do
         txt = @home.touch "a.txt"
-        a = NativeFtpFile.new("/a.txt", java.io.File.new(txt.to_s), @user)
+        a = Harbor::FTP::FileSystems::NativeFtpFile.new("/a.txt", java.io.File.new(txt.to_s), @user)
         a.file.must_be_kind_of java.io.File
         a.file.canonical_path.must_equal txt.realpath.to_s
       end
@@ -159,7 +157,7 @@ describe Harbor::FTP::FileSystems::NativeFtpFile do
     describe "hash" do
       it "must return the hash-code of the underlying java.io.File's canonical path" do
         txt = @home.touch "a.txt"
-        a = NativeFtpFile.new("/a.txt", java.io.File.new(txt.to_s), @user)
+        a = Harbor::FTP::FileSystems::NativeFtpFile.new("/a.txt", java.io.File.new(txt.to_s), @user)
         a.hash.must_equal a.file.canonical_path.hash
       end
     end
@@ -169,8 +167,8 @@ describe Harbor::FTP::FileSystems::NativeFtpFile do
         a = @home.touch "a.txt"
         (@home + "b").mkpath
         b = @home + "b" + "a.txt"
-        file1 = NativeFtpFile.new("/a.txt", java.io.File.new(a.to_s), @user)
-        file2 = NativeFtpFile.new("/b/a.txt", java.io.File.new(b.to_s), @user)
+        file1 = Harbor::FTP::FileSystems::NativeFtpFile.new("/a.txt", java.io.File.new(a.to_s), @user)
+        file2 = Harbor::FTP::FileSystems::NativeFtpFile.new("/b/a.txt", java.io.File.new(b.to_s), @user)
 
         a.exist?.must_equal true
         b.exist?.must_equal false
@@ -183,7 +181,7 @@ describe Harbor::FTP::FileSystems::NativeFtpFile do
     describe "last_modified=" do
       it "should update the file's mtime" do
         txt = @home.touch "a.txt"
-        a = NativeFtpFile.new("/a.txt", java.io.File.new(txt.to_s), @user)
+        a = Harbor::FTP::FileSystems::NativeFtpFile.new("/a.txt", java.io.File.new(txt.to_s), @user)
         original_mtime = txt.mtime.to_i
         past = original_mtime - 10000
         

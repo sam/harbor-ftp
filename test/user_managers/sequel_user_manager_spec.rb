@@ -119,5 +119,15 @@ describe Harbor::FTP::UserManagers::SequelUserManager do
       end
     end
     
+    it "must be able to list all users" do
+      users = @user_manager.get_all_user_names
+      users.size.must_equal 1
+      users.first.must_equal "fred@example.com"
+    end
+    
+    it "must tell you if a user exists" do
+      @user_manager.exists?("fred@example.com").must_equal true
+    end
+    
   end
 end

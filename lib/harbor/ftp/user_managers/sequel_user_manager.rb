@@ -20,7 +20,7 @@ class Harbor
         end
       
         def exists?(username)
-          @user_model.where(@key => username).empty?
+          !@user_model.where(@key => username).empty?
         end
       
       end # class SequelUserManager

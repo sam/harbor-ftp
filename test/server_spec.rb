@@ -114,7 +114,7 @@ describe Harbor::FTP::Server do
     it "should require a UserManager instance" do
       assert_raises(ArgumentError) do
         @server.user_manager = "cow"
-      end
+      end      
     end
   end
 end
