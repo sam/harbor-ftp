@@ -19,6 +19,7 @@ end
 def run_single_spec(name)
   spec = Pathname("test/#{name}_spec.rb")
   if spec.exist?
+    puts "\n\nRunning spec for #{name}..."
     system("jruby #{spec}")
   else
     puts "\n\nNo matching spec for #{name}.rb."
@@ -44,7 +45,7 @@ end
 script = Watchr::Script.new
 # Run an individual spec when it changes. Again, would be nice to be able to
 # load and execute instead of firing up a separate process.
-script.watch( "test/.*_spec\.rb" )         { |match| system("jruby #{match[0]}") }
+script.watch( "test/(.*)_spec\.rb" )         { |match| run_single_spec match[1] }
 # When a lib file changes, attempt to run the matching spec.
 script.watch( "lib/harbor/ftp/(.*)\.rb" )  { |match| run_single_spec match[1] }
 
