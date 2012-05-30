@@ -6,6 +6,7 @@ class Harbor
         # for the IBM JVM. It's a port of what was an anonymous
         # class in the original Apache implementation of NativeFtpFile.
         class FileInputStream < java.io.FileInputStream
+          __persistent__ = true
           def initialize(file, offset)
             @file = java.io.RandomAccessFile.new(file, "r")
             @file.seek offset

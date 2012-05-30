@@ -14,7 +14,7 @@ class Harbor
         def get_user_by_name(username)
           @user_model.first(@key => username)
         end
-      
+
         def get_all_user_names
           @user_model.map(@key)
         end
