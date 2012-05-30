@@ -32,8 +32,7 @@ interrupted = false
 # Hit it twice in quick succession to exit the program.
 Signal.trap("INT") do
   if interrupted
-    puts
-    puts "Shutting down..."
+    puts "\nShutting down..."
     exit
   else
     interrupted = true
