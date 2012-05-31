@@ -5,11 +5,15 @@ require "harbor/ftp/user_managers/sequel_user_manager"
 require "bcrypt"
 
 describe Harbor::FTP::UserManagers::SequelUserManager do
+
+  before do
+    require "jdbc/h2"
+  end
   
   describe "authorization with custom key-field" do
 
     before do
-      
+      DB.drop_table? :users
       DB.create_table :users do
         String :name, primary_key: true
         String :password, null: false
@@ -73,6 +77,7 @@ describe Harbor::FTP::UserManagers::SequelUserManager do
   describe "custom User model" do
     
     before do
+      DB.drop_table? :users
       DB.create_table :users do
         String :email, primary_key: true
         String :password_hash, null: true

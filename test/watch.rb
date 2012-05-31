@@ -34,6 +34,7 @@ class Watch
       if spec.exist?
         puts "Reloading #{spec}"
         MiniTest::Spec.reset
+        Helper::reset_port!
         load spec
         MiniTest::Unit.new._run
       else
@@ -62,6 +63,7 @@ class Watch
       if spec.exist?
         puts "Reloading #{spec}"
         MiniTest::Spec.reset
+        Helper::reset_port!
         load spec
         MiniTest::Unit.new._run
       else
@@ -79,6 +81,7 @@ class Watch
   def run_all_specs
     puts "\n --- Running all specs ---\n\n"
     MiniTest::Spec.reset
+    Helper::reset_port!
     Dir["test/**/*_spec.rb"].each { |file| load file }
     MiniTest::Unit.new._run
   end
