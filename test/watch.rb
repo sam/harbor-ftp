@@ -3,49 +3,95 @@
 require_relative "helper"
 require "watchr"
 
-def all_spec_files
-  Dir["test/**/*_spec.rb"]
-end
+class Watch
 
-def run_all_specs
-  # It would be nice if this could just Kernel::load all files instead, and call
-  # Minitest::Unit::run, but loading the specs causes them to be re-added multiple
-  # times. There's no Set of specifications, so I'd have to figure out how to clear
-  # the registered specs first.
-  puts "\n --- Running all specs ---\n\n"
-  system("jruby -e'%w( #{all_spec_files.join(' ')} ).each {|file| require file }'")
-end
-
-def run_single_spec(name)
-  spec = Pathname("test/#{name}_spec.rb")
-  if spec.exist?
-    puts "\n\nRunning spec for #{name}..."
-    system("jruby #{spec}")
-  else
-    puts "\n\nNo matching spec for #{name}.rb."
+  def initialize
+    @interrupted = false
+    
+    # Hit Ctrl-C once to re-run all specs; twice to exit the program.
+    Signal.trap("INT") do
+      if @interrupted
+        puts "\nShutting down..."
+        exit
+      else
+        @interrupted = true
+        run_all_specs
+        @interrupted = false
+      end
+    end
   end
-end
+  
+  def run
+    script = Watchr::Script.new
+    
+    # Run an individual spec when it changes.
+    script.watch( "test/(.*)_spec\.rb" ) do |match|
+      puts "\n#{Time.now.to_i} #{"#" * 69}\n"
+      
+      underscored_name = match[1]
+      spec = Pathname("test/#{underscored_name}_spec.rb")
+      
+      if spec.exist?
+        puts "Reloading #{spec}"
+        MiniTest::Spec.reset
+        load spec
+        MiniTest::Unit.new.run
+      else
+        puts "No matching spec for #{spec}"
+      end
+      
+      puts "#{"*" * 80}\n"
+    end
+    
+    # When a lib file changes, attempt to run the matching spec.
+    script.watch( "lib/harbor/ftp/(.*)\.rb" ) do |match|
+      puts "\n#{Time.now.to_i} #{"#" * 69}\n"
+      
+      underscored_name = match[1]
+      
+      lib = Pathname("lib/harbor/ftp/#{underscored_name}.rb")
+      if lib.exist?
+        puts "Reloading #{lib}"
+        remove_nested_const(underscored_name)
+        load lib
+      else
+        puts "No matching lib for #{lib}"
+      end
 
-interrupted = false
+      spec = Pathname("test/#{underscored_name}_spec.rb")
+      if spec.exist?
+        puts "Reloading #{spec}"
+        MiniTest::Spec.reset
+        load spec
+        MiniTest::Unit.new.run
+      else
+        puts "No matching spec for #{spec}"
+      end
+      
+      puts "#{"*" * 80}\n"
+    end
 
-# Ctrl-C
-# Hit it twice in quick succession to exit the program.
-Signal.trap("INT") do
-  if interrupted
-    puts "\nShutting down..."
-    exit
-  else
-    interrupted = true
-    run_all_specs
-    interrupted = false
+    Watchr::Controller.new(script, Watchr.handler.new).run
   end
+  
+  private
+
+  def run_all_specs
+    puts "\n --- Running all specs ---\n\n"
+    MiniTest::Spec.reset
+    Dir["test/**/*_spec.rb"].each { |file| load file }
+    MiniTest::Unit.new.run
+  end
+  
+  def remove_nested_const(name)
+    fragments = name.classify.split("::")
+    klass = fragments.pop
+    parent = fragments.inject(Harbor::FTP) do |k,n|
+      k.const_get(n)
+    end
+    parent.send(:remove_const, klass)
+  end
+    
 end
 
-script = Watchr::Script.new
-# Run an individual spec when it changes. Again, would be nice to be able to
-# load and execute instead of firing up a separate process.
-script.watch( "test/(.*)_spec\.rb" )         { |match| run_single_spec match[1] }
-# When a lib file changes, attempt to run the matching spec.
-script.watch( "lib/harbor/ftp/(.*)\.rb" )  { |match| run_single_spec match[1] }
-
-Watchr::Controller.new(script, Watchr.handler.new).run
+Watch.new.run

@@ -15,7 +15,8 @@ require "sequel"
 
 # jdbc/h2 declares an unscoped VERSION constant,
 # which will throw an annoying warning.
-Harbor::FTP::suppress_warnings { require "jdbc/h2" }
+# Harbor::FTP::suppress_warnings { require "jdbc/h2" }
+require "jdbc/h2"
 
 DB = Sequel.connect("jdbc:h2:mem:")
 
