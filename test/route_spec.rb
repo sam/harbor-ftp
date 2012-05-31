@@ -4,12 +4,52 @@ require_relative "helper"
 
 describe Harbor::FTP::Route do
 
-  it "has a path class-method" do
+  it "has a path method" do
     Harbor::FTP::Route.must_respond_to :path
   end
+
+  it "has a match method" do
+    Harbor::FTP::Route.must_respond_to :match
+  end
   
-  it "has a cow class-method" do
-    Harbor::FTP::Route.must_respond_to :cow
+  it "has a clear! method" do
+    Harbor::FTP::Route.must_respond_to :clear!
+  end
+  
+  it "path raises a TypeError when called on the base class" do
+    assert_raises(TypeError) do
+      Harbor::FTP::Route.path("bob")
+    end
+  end
+  
+  it "accepts a path on a descendant without error" do
+    posts = Class.new(Harbor::FTP::Route) do
+      path "posts"
+    end
+    
+    Harbor::FTP::Route.clear!
+  end
+  
+  describe "a simple path" do
+    before do
+      @posts = Class.new(Harbor::FTP::Route) do
+        path "posts"
+      end
+    end
+    
+    after do
+      Harbor::FTP::Route.clear!
+    end
+    
+    it "with no match returns nil" do
+      Harbor::FTP::Route.match("zebras").must_be_nil
+    end
+    
+    it "path can be matched" do
+      posts = Harbor::FTP::Route.match("posts")
+      posts.wont_be_nil
+      posts.must_equal @posts
+    end
   end
 end
 

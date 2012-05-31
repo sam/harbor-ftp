@@ -4,7 +4,7 @@ $:.unshift lib unless $:.include?(lib)
 require "java"
 
 require "rjack-logback"
-RJack::Logback.config_console( :level => :error )
+RJack::Logback.config_console(level: :error)
 
 Dir[Pathname(__FILE__).dirname.parent.parent + "jars" + "*.jar"].each { |jar| require jar }
 
@@ -24,13 +24,6 @@ class Harbor
       $VERBOSE = original_verbosity
       return result
     end
-  end
-end
-
-class Module
-  def declare_private_constant(name, value)
-    const_set name, value
-    private_constant name
   end
 end
 

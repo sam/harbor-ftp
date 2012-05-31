@@ -5,10 +5,6 @@ require "harbor/ftp/user_managers/sequel_user_manager"
 require "bcrypt"
 
 describe Harbor::FTP::UserManagers::SequelUserManager do
-
-  before do
-    require "jdbc/h2"
-  end
   
   describe "authorization with custom key-field" do
 

@@ -28,7 +28,7 @@ class Harbor
           false
         end
         
-        declare_private_constant :SEMAPHORE, Mutex.new
+        SEMAPHORE = Mutex.new
         def create_file_system_view(user)
           SEMAPHORE.synchronize do
             if create_home?

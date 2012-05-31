@@ -3,7 +3,9 @@ class Harbor
     module Loggable
       
       def self.included(target)
-        target.declare_private_constant :LOG, RJack::SLF4J[target]
+        unless target.const_defined? :LOG
+          target.const_set :LOG, RJack::SLF4J[target]
+        end
       end
       
     end # module Loggable

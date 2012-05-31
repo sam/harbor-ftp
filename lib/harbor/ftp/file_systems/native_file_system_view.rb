@@ -50,7 +50,7 @@ class Harbor
           LOG.debug { "change_working_directory(\"#{dir}\")" }
 
           result = @root.chdir(dir)
-          LOG.error { "dir does not exist! #{dir}" } unless result
+          LOG.warn { "dir does not exist! #{dir}" } unless result
           result
         end
         

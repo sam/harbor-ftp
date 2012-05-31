@@ -54,6 +54,7 @@ class Harbor
             if pathname.to_s.start_with? @home.to_s
               pathname
             else
+              LOG.warn { "attempt to traverse above home: #{pathname}" }
               @home
             end
           end
