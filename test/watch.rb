@@ -33,9 +33,6 @@ class Watch
       
       if spec.exist?
         puts "Reloading #{spec}"
-        # MiniTest::Spec::test_suites.each do |suite|
-        #   suite.nuke_test_methods!
-        # end
         MiniTest::Spec.reset
         load spec
         MiniTest::Unit.new._run
@@ -64,9 +61,6 @@ class Watch
       spec = Pathname("test/#{underscored_name}_spec.rb")
       if spec.exist?
         puts "Reloading #{spec}"
-        # MiniTest::Spec::test_suites.each do |suite|
-        #   suite.nuke_test_methods!
-        # end
         MiniTest::Spec.reset
         load spec
         MiniTest::Unit.new._run
