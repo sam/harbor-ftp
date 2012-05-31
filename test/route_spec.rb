@@ -9,7 +9,6 @@ describe Harbor::FTP::Route do
   end
   
   it "has a cow class-method" do
-    # p Harbor::FTP::Route.methods.sort
     Harbor::FTP::Route.must_respond_to :cow
   end
 end

@@ -33,9 +33,12 @@ class Watch
       
       if spec.exist?
         puts "Reloading #{spec}"
+        # MiniTest::Spec::test_suites.each do |suite|
+        #   suite.nuke_test_methods!
+        # end
         MiniTest::Spec.reset
         load spec
-        MiniTest::Unit.new.run
+        MiniTest::Unit.new._run
       else
         puts "No matching spec for #{spec}"
       end
@@ -61,9 +64,12 @@ class Watch
       spec = Pathname("test/#{underscored_name}_spec.rb")
       if spec.exist?
         puts "Reloading #{spec}"
+        # MiniTest::Spec::test_suites.each do |suite|
+        #   suite.nuke_test_methods!
+        # end
         MiniTest::Spec.reset
         load spec
-        MiniTest::Unit.new.run
+        MiniTest::Unit.new._run
       else
         puts "No matching spec for #{spec}"
       end
@@ -80,7 +86,7 @@ class Watch
     puts "\n --- Running all specs ---\n\n"
     MiniTest::Spec.reset
     Dir["test/**/*_spec.rb"].each { |file| load file }
-    MiniTest::Unit.new.run
+    MiniTest::Unit.new._run
   end
   
   def remove_nested_const(name)
