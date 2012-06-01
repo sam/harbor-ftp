@@ -26,51 +26,12 @@ class Watch
     
     # Run an individual spec when it changes.
     script.watch( "test/(.*)_spec\.rb" ) do |match|
-      puts "\n#{Time.now.to_i} #{"#" * 69}\n"
-      
-      underscored_name = match[1]
-      spec = Pathname("test/#{underscored_name}_spec.rb")
-      
-      if spec.exist?
-        puts "Reloading #{spec}"
-        MiniTest::Spec.reset
-        Helper::reset_port!
-        load spec
-        MiniTest::Unit.new._run
-      else
-        puts "No matching spec for #{spec}"
-      end
-      
-      puts "#{"*" * 80}\n"
+      run_single_spec match[1]
     end
     
     # When a lib file changes, attempt to run the matching spec.
     script.watch( "lib/harbor/ftp/(.*)\.rb" ) do |match|
-      puts "\n#{Time.now.to_i} #{"#" * 69}\n"
-      
-      underscored_name = match[1]
-      
-      lib = Pathname("lib/harbor/ftp/#{underscored_name}.rb")
-      if lib.exist?
-        puts "Reloading #{lib}"
-        remove_nested_const(underscored_name)
-        load lib
-      else
-        puts "No matching lib for #{lib}"
-      end
-
-      spec = Pathname("test/#{underscored_name}_spec.rb")
-      if spec.exist?
-        puts "Reloading #{spec}"
-        MiniTest::Spec.reset
-        Helper::reset_port!
-        load spec
-        MiniTest::Unit.new._run
-      else
-        puts "No matching spec for #{spec}"
-      end
-      
-      puts "#{"*" * 80}\n"
+      run_single_spec match[1]
     end
 
     Watchr::Controller.new(script, Watchr.handler.new).run
@@ -78,12 +39,29 @@ class Watch
   
   private
 
+  def run_single_spec(underscored_name)
+    puts "\n#{Time.now.to_i} #{"#" * 69}\n"
+    
+    spec = Pathname("test/#{underscored_name}_spec.rb")
+    
+    if spec.exist?
+      org.jruby.Ruby.newInstance.executeScript <<-RUBY, spec.to_s
+        require "#{spec}"
+        MiniTest::Unit.new._run
+      RUBY
+    else
+      puts "No matching spec for #{spec}"
+    end
+    
+    puts "#{"*" * 80}\n"
+  end
+  
   def run_all_specs
     puts "\n --- Running all specs ---\n\n"
-    MiniTest::Spec.reset
-    Helper::reset_port!
-    Dir["test/**/*_spec.rb"].each { |file| load file }
-    MiniTest::Unit.new._run
+    org.jruby.Ruby.newInstance.executeScript <<-RUBY, "all-specs"
+      Dir["test/**/*_spec.rb"].each { |file| require file }
+      MiniTest::Unit.new._run
+    RUBY
   end
   
   def remove_nested_const(name)
