@@ -1,6 +1,9 @@
 #!/usr/bin/env jruby
 
-require_relative "helper"
+require "java"
+require "rubygems"
+require "bundler/setup" unless Object::const_defined?("Bundler")
+
 require "watchr"
 
 class Watch
@@ -62,17 +65,7 @@ class Watch
       Dir["test/**/*_spec.rb"].each { |file| require file }
       MiniTest::Unit.new._run
     RUBY
-  end
-  
-  def remove_nested_const(name)
-    fragments = name.classify.split("::")
-    klass = fragments.pop
-    parent = fragments.inject(Harbor::FTP) do |k,n|
-      k.const_get(n)
-    end
-    parent.send(:remove_const, klass)
-  end
-    
+  end  
 end
 
 Watch.new.run
