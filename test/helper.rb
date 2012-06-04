@@ -2,7 +2,6 @@ require "rubygems"
 require "bundler/setup" unless Object::const_defined?("Bundler")
 
 require "faker"
-require "sequel"
 
 require "minitest/autorun"
 require "minitest/pride"
