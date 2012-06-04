@@ -71,6 +71,8 @@ h2. Testing
 
 Please keep in mind while reviewing the @examples@ or the _Design_ section below that the tests can all be executed on an individual basis. ie: @jruby test/user_adapter_spec.rb@.
 
+There is also a continuous-testing tool built in. Just run @test/watch.rb@ and whenever a file (spec or lib) is changed, the appropriate spec will be run. You can run all specs by sending an INT (CTRL+C), or exit by sending it twice.
+
 While we can't run a Coverage tool under JRuby, we do aim to test most of the library, and provide solid documentation. If you have any questions or find a particular area lacking in documentation please file an issue.
 
 h2. Design
