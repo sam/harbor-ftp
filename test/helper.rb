@@ -90,10 +90,9 @@ class Helper
       end
       
       def start
-        FileUtils::rm_rf @home_directory if File.exists?(@home_directory)
-        FileUtils::mkdir @home_directory
-        FileUtils::mkdir @home_directory + "samples"
-        File::open(@home_directory + "samples" + "test.dat", "w+") do |file|
+        @home_directory.rmtree if @home_directory.exist?
+        (@home_directory + "samples").mkpath
+        (@home_directory + "samples" + "test.dat").open("w") do |file|
           file << Faker::Lorem::paragraphs
         end
 
@@ -114,7 +113,7 @@ class Helper
       
       def stop
         @server.stop
-        FileUtils::rm_rf @home_directory
+        @home_directory.rmtree
         self
       end
     end
