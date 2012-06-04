@@ -108,7 +108,7 @@ class Helper
         # files to test with and such, it's probably unnecessary.
         # If you're going to try to immediately connect, then you might
         # run into timing issues without some sort of brief sleep.
-        sleep 0.1 # Give the server time to start up.
+        sleep 0.5 # Give the server time to start up.
         self
       end
       
