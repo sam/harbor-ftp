@@ -4,10 +4,9 @@ require "java"
 require "rubygems"
 require "bundler/setup" unless Object::const_defined?("Bundler")
 
-require "watchr"
+require "listen"
 
-class Watch
-
+class Watcher
   def initialize
     @interrupted = false
     
@@ -25,28 +24,28 @@ class Watch
   end
   
   def run
-    script = Watchr::Script.new
-    
-    # Run an individual spec when it changes.
-    script.watch( "test/(.*)_spec\.rb" ) do |match|
-      run_single_spec match[1]
+    listener = Listen.to("test", "lib")
+      .filter(/\.rb$/)
+      .change do |modified, added, removed|
+      modified.each do |path|
+        # Because the ignore feature on Listener seems to
+        # not work...
+        next unless path =~ /\/(lib\/.*|test\/.*_spec)\.rb$/
+        
+        run_single_spec Pathname(path).basename(".rb").sub(/_spec$/, "")
+      end
     end
     
-    # When a lib file changes, attempt to run the matching spec.
-    script.watch( "lib/harbor/ftp/(.*)\.rb" ) do |match|
-      run_single_spec match[1]
-    end
-
-    Watchr::Controller.new(script, Watchr.handler.new).run
+    puts "Listening for changes..."
+    listener.start
   end
   
   private
-
   def run_single_spec(underscored_name)
     puts "\n#{Time.now.to_i} #{"#" * 69}\n"
-    
+  
     spec = Pathname("test/#{underscored_name}_spec.rb")
-    
+  
     if spec.exist?
       org.jruby.Ruby.newInstance.executeScript <<-RUBY, spec.to_s
         require "#{spec}"
@@ -55,17 +54,17 @@ class Watch
     else
       puts "No matching spec for #{spec}"
     end
-    
+  
     puts "#{"*" * 80}\n"
   end
-  
+
   def run_all_specs
     puts "\n --- Running all specs ---\n\n"
     org.jruby.Ruby.newInstance.executeScript <<-RUBY, "all-specs"
       Dir["test/**/*_spec.rb"].each { |file| require file }
       MiniTest::Unit.new._run
     RUBY
-  end  
+  end
 end
 
-Watch.new.run
+Watcher.new.run

@@ -20,7 +20,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency "jdbc-postgres"
   s.add_development_dependency "jdbc-h2"
   s.add_development_dependency "rjack-logback"
-  s.add_development_dependency "watchr"
+  s.add_development_dependency "listen"
 end
-
-# sudo zfs snapshot -r zones@upgrade-smartos-
