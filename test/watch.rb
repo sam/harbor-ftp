@@ -4,9 +4,13 @@ require "java"
 require "rubygems"
 require "bundler/setup" unless Object::const_defined?("Bundler")
 
+require "singleton"
+
 require "listen"
 
 class Watcher
+  include Singleton
+  
   def initialize
     @interrupted = false
     
@@ -24,23 +28,36 @@ class Watcher
   end
   
   def run
-    listener = Listen.to("test", "lib")
-      .filter(/\.rb$/)
-      .change do |modified, added, removed|
-      modified.each do |path|
-        # Because the ignore feature on Listener seems to
-        # not work...
-        next unless path =~ /\/(lib\/.*|test\/.*_spec)\.rb$/
-        
-        run_single_spec Pathname(path).basename(".rb").sub(/_spec$/, "")
-      end
-    end
-    
+    # Run on startup. Just a good idea to let you know
+    # your current overall build status.
+    run_all_specs
+    # Output here just so you know when changes will be
+    # picked up after you start the program.
     puts "Listening for changes..."
     listener.start
   end
   
   private
+  def listener
+    # Using a MultiListener here since the only
+    # other way to watch both directories is to
+    # create two listeners and start the first in
+    # non-blocking mode so you can start the second.
+    # Neither of these seems all that clean compared to
+    # the original 'watchr' code, but it is fewer LOC,
+    # it works, and you don't get annoying warnings so...
+    @listener ||= Listen.to("test", "lib")
+      .filter(/\.rb$/)
+      .change do |modified, added, removed|
+      modified.each do |path|
+        # Filter because the ignore feature on Listener seems to
+        # not work... Maybe a MultiListener issue?
+        next unless path =~ /\/(lib\/.*|test\/.*_spec)\.rb$/
+        run_single_spec Pathname(path).basename(".rb").sub(/_spec$/, "")
+      end
+    end
+  end
+  
   def run_single_spec(underscored_name)
     puts "\n#{Time.now.to_i} #{"#" * 69}\n"
   
@@ -67,4 +84,4 @@ class Watcher
   end
 end
 
-Watcher.new.run
+Watcher::instance.run
