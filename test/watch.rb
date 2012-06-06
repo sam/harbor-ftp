@@ -30,7 +30,7 @@ class Watcher
   def run
     # Run on startup. Just a good idea to let you know
     # your current overall build status.
-    run_all_specs
+    Thread.new { run_all_specs }
     # Output here just so you know when changes will be
     # picked up after you start the program.
     puts "Listening for changes..."
@@ -58,12 +58,11 @@ class Watcher
     end
   end
   
-  def run_single_spec(underscored_name)
-    puts "\n#{Time.now.to_i} #{"#" * 69}\n"
-  
+  def run_single_spec(underscored_name)  
     spec = Pathname("test/#{underscored_name}_spec.rb")
-  
+    
     if spec.exist?
+      puts "\n --- Running #{spec.basename('.rb')} ---\n\n"
       org.jruby.Ruby.newInstance.executeScript <<-RUBY, spec.to_s
         require "#{spec}"
         MiniTest::Unit.new._run
@@ -71,8 +70,6 @@ class Watcher
     else
       puts "No matching spec for #{spec}"
     end
-  
-    puts "#{"*" * 80}\n"
   end
 
   def run_all_specs
