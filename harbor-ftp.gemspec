@@ -14,7 +14,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency "rake"
   s.add_development_dependency "sequel", ">= 3.36.1"
   s.add_development_dependency "faker"
-  s.add_development_dependency "minitest"
+  s.add_development_dependency "minitest", ">= 3.0.1"
   s.add_development_dependency "minitest-wscolor"
   s.add_development_dependency "bcrypt-ruby"
   s.add_development_dependency "jdbc-postgres"
