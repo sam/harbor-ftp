@@ -18,6 +18,10 @@ class Harbor
         paths.clear
       end
       
+      def self.list(&b)
+        nil
+      end
+      
       private
       def self.paths
         @@paths ||= {}

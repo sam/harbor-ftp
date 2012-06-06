@@ -30,10 +30,22 @@ describe Harbor::FTP::Route do
     Harbor::FTP::Route.clear!
   end
   
+  describe "list" do
+    it "has a list method" do
+      Harbor::FTP::Route.must_respond_to :list
+    end
+    
+    it "takes a block" do
+      parameters = Harbor::FTP::Route.method(:list).parameters
+      parameters.size.must_equal 1
+      parameters[0][0].must_equal :block
+    end
+  end
+  
   describe "a simple path" do
     before do
       @posts = Class.new(Harbor::FTP::Route) do
-        path "posts"
+        path "/posts"
       end
     end
     
@@ -46,7 +58,7 @@ describe Harbor::FTP::Route do
     end
     
     it "path can be matched" do
-      posts = Harbor::FTP::Route.match("posts")
+      posts = Harbor::FTP::Route.match("/posts")
       posts.wont_be_nil
       posts.must_equal @posts
     end
