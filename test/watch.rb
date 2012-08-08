@@ -28,9 +28,6 @@ class Watcher
   end
   
   def run
-    # Run on startup. Just a good idea to let you know
-    # your current overall build status.
-    Thread.new { run_all_specs }
     # Output here just so you know when changes will be
     # picked up after you start the program.
     puts "Listening for changes..."
@@ -53,7 +50,8 @@ class Watcher
         # Filter because the ignore feature on Listener seems to
         # not work... Maybe a MultiListener issue?
         next unless path =~ /\/(lib\/.*|test\/.*_spec)\.rb$/
-        run_single_spec Pathname(path).basename(".rb").sub(/_spec$/, "")
+        relative_path_from_root = Pathname(path).relative_path_from(Pathname.pwd)
+        run_single_spec relative_path_from_root.to_s.sub(/(_spec)?\.rb/, "").sub(/^(test|lib\/harbor\/ftp)\//, "")
       end
     end
   end
